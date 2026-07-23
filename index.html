@@ -496,22 +496,6 @@ ${getChecked('h')}
   footer{text-align:center;font-size:10px;color:#aaa;margin-top:20px;border-top:1px solid #e0e0f0;padding-top:10px;font-style:italic;}
 </style>
 
-<script>
-  // Resize Google Sites iframe to full width
-  function resizeParent() {
-    try {
-      window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
-    } catch(e) {}
-  }
-  
-  // Force html and body to 100% width
-  document.documentElement.style.width = '100%';
-  document.body.style.width = '100%';
-  document.body.style.overflowX = 'hidden';
-  
-  window.addEventListener('load', resizeParent);
-  window.addEventListener('resize', resizeParent);
-</script>
 </head>
 <body>
 <div class="subtitle">FLOW STUDIO PILATES</div>
