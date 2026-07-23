@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flow Studio Pilates — Ιστορικό Υγείας</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; background: #f0f2f5; color: #1a1a2e; }
+
+  .page { background: #fff; max-width: 820px; margin: 24px auto; padding: 36px 40px; border-radius: 8px; box-shadow: 0 2px 16px rgba(0,0,0,0.10); }
+
+  .header { text-align: center; margin-bottom: 28px; padding-bottom: 18px; border-bottom: 2px solid #4a4a8a; }
+  .header h1 { font-size: 22px; font-weight: 700; color: #2d2d6b; letter-spacing: 1px; }
+  .header .subtitle { font-size: 11px; color: #888; margin-top: 4px; letter-spacing: 2px; text-transform: uppercase; }
+
+  .section { margin-bottom: 20px; }
+  .section-title { font-size: 11px; font-weight: 700; color: #4a4a8a; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; padding-bottom: 4px; border-bottom: 1px solid #e0e0f0; }
+
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+  .field-group { display: flex; flex-direction: column; gap: 3px; }
+  .field-group label { font-size: 10px; font-weight: 700; color: #4a4a8a; text-transform: uppercase; letter-spacing: 0.8px; }
+  .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="date"] {
+    border: 1.5px solid #c8c8e8; border-radius: 5px; padding: 7px 10px;
+    font-size: 13px; font-family: inherit; background: #f8f8fd; width: 100%;
+  }
+  .field-group input:focus { outline: none; border-color: #4a4a8a; background: #fff; }
+
+  .bullet-section { margin-bottom: 12px; }
+  .bullet-section p { font-size: 12.5px; margin-bottom: 5px; line-height: 1.5; }
+  textarea { width: 100%; border: 1.5px solid #c8c8e8; border-radius: 5px; padding: 8px 10px; font-size: 13px; font-family: inherit; background: #f8f8fd; resize: vertical; }
+  textarea:focus { outline: none; border-color: #4a4a8a; background: #fff; }
+
+  /* ── Checkbox grid ── */
+  .cb-grid { display: grid; border: 1px solid #d0d0e8; border-radius: 6px; overflow: hidden; }
+  .cb-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .cb-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+
+  .cb-cell {
+    display: flex; align-items: flex-start; gap: 7px;
+    padding: 7px 8px;
+    border-right: 1px solid #d0d0e8;
+    border-bottom: 1px solid #d0d0e8;
+    cursor: pointer; font-size: 11.5px; line-height: 1.35;
+  }
+  .cb-cell:hover { background: #f0f0fa; }
+  .cb-cell input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; width: 14px; height: 14px; accent-color: #4a4a8a; cursor: pointer; }
+
+  /* Remove right border on last column */
+  .cols-4 .cb-cell:nth-child(4n)   { border-right: none; }
+  .cols-5 .cb-cell:nth-child(5n)   { border-right: none; }
+  /* Remove bottom border on last row cells */
+  .cols-4 .cb-cell:nth-last-child(-n+4) { border-bottom: none; }
+  .cols-5 .cb-cell:nth-last-child(-n+5) { border-bottom: none; }
+
+  .habits-row { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 6px; }
+  .habit-item { display: flex; align-items: center; gap: 6px; font-size: 12.5px; cursor: pointer; }
+  .habit-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: #4a4a8a; cursor: pointer; }
+
+  /* ── Signature ── */
+  .sig-wrapper { display: grid; grid-template-columns: 1fr 200px; gap: 20px; align-items: start; }
+  .sig-label, .date-label { font-size: 10px; font-weight: 700; color: #4a4a8a; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; }
+  .sig-container { border: 1.5px solid #c8c8e8; border-radius: 6px; background: #f8f8fd; position: relative; }
+  #sigCanvas { display: block; width: 100%; height: 130px; cursor: crosshair; border-radius: 6px; touch-action: none; }
+  .sig-hint { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 12px; color: #bbb; pointer-events: none; text-align: center; width: 100%; }
+  .sig-clear { position: absolute; top: 6px; right: 8px; font-size: 11px; color: #4a4a8a; cursor: pointer; background: rgba(255,255,255,0.9); border: 1px solid #c8c8e8; border-radius: 4px; padding: 2px 8px; font-family: inherit; }
+
+  /* ── Declaration ── */
+  .declaration { background: #f5f5fc; border-left: 3px solid #4a4a8a; border-radius: 0 6px 6px 0; padding: 14px 16px; font-size: 11.5px; line-height: 1.7; color: #333; margin-bottom: 20px; }
+  .declaration h3 { font-size: 13px; font-weight: 700; color: #2d2d6b; margin-bottom: 8px; text-align: center; }
+
+  /* ── Submit button ── */
+  .action-bar { text-align: center; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e0e0f0; }
+  .btn-submit { background: #2d2d6b; color: #fff; border: none; border-radius: 6px; padding: 13px 40px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; letter-spacing: 0.5px; transition: background 0.2s; }
+  .btn-submit:hover { background: #4a4a8a; }
+  .btn-submit:disabled { background: #aaa; cursor: not-allowed; }
+  .submit-note { font-size: 11px; color: #999; margin-top: 8px; }
+
+  /* ── Toast ── */
+  #toast { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #2d2d6b; color: #fff; padding: 14px 28px; border-radius: 8px; font-size: 14px; z-index: 999; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  #toast.error { background: #c0392b; }
+
+  .page-break-hint { border-top: 2px dashed #d0d0e8; margin: 24px 0; position: relative; text-align: center; }
+  .page-break-hint span { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #fff; padding: 0 10px; font-size: 10px; color: #bbb; letter-spacing: 1px; }
+
+  .form-footer { text-align: center; font-size: 10.5px; color: #aaa; margin-top: 18px; padding-top: 12px; border-top: 1px solid #e8e8f0; font-style: italic; }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .page { padding: 18px 14px; margin: 0; border-radius: 0; }
+    .fields-grid { grid-template-columns: 1fr; }
+
+    .cb-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+    .cols-4 .cb-cell:nth-child(4n)         { border-right: 1px solid #d0d0e8; }
+    .cols-4 .cb-cell:nth-last-child(-n+4)  { border-bottom: 1px solid #d0d0e8; }
+    .cols-4 .cb-cell:nth-child(2n)         { border-right: none; }
+    .cols-4 .cb-cell:nth-last-child(-n+2)  { border-bottom: none; }
+
+    .cb-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
+    .cols-5 .cb-cell:nth-child(5n)         { border-right: 1px solid #d0d0e8; }
+    .cols-5 .cb-cell:nth-last-child(-n+5)  { border-bottom: 1px solid #d0d0e8; }
+    .cols-5 .cb-cell:nth-child(2n)         { border-right: none; }
+    /* last row: last 1 or 2 cells */
+    .cols-5 .cb-cell:last-child            { border-bottom: none; }
+    .cols-5 .cb-cell:nth-last-child(2)     { border-bottom: none; }
+
+    .sig-wrapper { grid-template-columns: 1fr; }
+    #sigCanvas { height: 150px; }
+  }
+
+  @media print {
+    .action-bar { display: none; }
+    .sig-clear { display: none; }
+  }
+</style>
+
+<script>
+  // Resize Google Sites iframe to full width
+  function resizeParent() {
+    try {
+      window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+    } catch(e) {}
+  }
+  
+  // Force html and body to 100% width
+  document.documentElement.style.width = '100%';
+  document.body.style.width = '100%';
+  document.body.style.overflowX = 'hidden';
+  
+  window.addEventListener('load', resizeParent);
+  window.addEventListener('resize', resizeParent);
+</script>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="header">
+    <div class="subtitle">Flow Studio Pilates</div>
+    <h1>Ιστορικό Υγείας</h1>
+  </div>
+
+  <!-- PERSONAL -->
+  <div class="section">
+    <div class="section-title">Προσωπικά Στοιχεία</div>
+    <div class="fields-grid">
+      <div class="field-group"><label>Ονοματεπώνυμο</label><input type="text" id="f_onoma" placeholder="Όνομα Επώνυμο"></div>
+      <div class="field-group"><label>Επάγγελμα</label><input type="text" id="f_epag" placeholder=""></div>
+      <div class="field-group"><label>Ημερομηνία Γέννησης</label><input type="date" id="f_dob"></div>
+      <div class="field-group"><label>Διεύθυνση &amp; Περιοχή</label><input type="text" id="f_dieu" placeholder=""></div>
+      <div class="field-group"><label>Τηλέφωνο</label><input type="text" id="f_til" placeholder=""></div>
+      <div class="field-group"><label>Email</label><input type="email" id="f_email" placeholder=""></div>
+    </div>
+  </div>
+
+  <!-- PATHOLOGIKA -->
+  <div class="section">
+    <div class="section-title">Παθολογικά &amp; Αυτοάνοσα Νοσήματα</div>
+    <p style="font-size:11.5px;color:#555;margin-bottom:8px;">Αν ΝΑΙ, τσεκάρετε:</p>
+    <div class="cb-grid cols-4" id="patho-grid">
+      <label class="cb-cell"><input type="checkbox" name="p" value="Υπέρταση/Υπότaση"> Υπέρταση / Υπότaση</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Θυρεοειδίτιδα Hashimoto"> Θυρεοειδίτιδα Hashimoto</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Λεύκη"> Λεύκη</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Ινομυαλγία"> Ινομυαλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Αρρυθμίες"> Αρρυθμίες</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Υποθυρεοειδισμός"> Υποθυρεοειδισμός</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Ψωρίαση"> Ψωρίαση</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Μυασθένεια Gravis"> Μυασθένεια Gravis</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Καρδιολογικά Προβλήματα"> Καρδιολογικά Προβλήματα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Υπερθυρεοειδισμός"> Υπερθυρεοειδισμός</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Αρθρίτιδα"> Αρθρίτιδα (Τύπος)</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Σκλήρυνση κατά πλάκας"> Σκλήρυνση κατά πλάκας</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Έμφραγμα"> Έμφραγμα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Νόσος του Graves"> Νόσος του Graves</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Πάρκινσον"> Πάρκινσον</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Εγκεφαλικό Επεισόδιο"> Εγκεφαλικό Επεισόδιο</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Σακχαρώδης Διαβήτης"> Σακχαρώδης Διαβήτης</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Σύνδρομο ευερέθιστου εντέρου"> Σύνδρομο ευερέθιστου εντέρου</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Συστημικός Ερυθηματώδης Λύκος"> Συστημικός Ερυθηματώδης Λύκος</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Καρκίνος &amp; Θεραπεία"> Καρκίνος &amp; Θεραπεία</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Χοληστερίνη/Τριγλυκερίδια"> Χοληστερίνη / Τριγλυκερίδια</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Γαστροοισοφαγική παλινδρόμηση"> Γαστροοισοφαγική παλινδρόμηση</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Αναιμία"> Αναιμία (Τύπος)</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Οστεοπενία/Οστεοπόρωση"> Οστεοπενία / Οστεοπόρωση</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Οφθαλμολογικά Προβλήματα"> Οφθαλμολογικά Προβλήματα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Γαστρίτιδα"> Γαστρίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Νόσος Addison"> Νόσος Addison</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Εμμηνόπαυση"> Εμμηνόπαυση</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Πίεση στα μάτια"> Πίεση στα μάτια</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Νόσος του Crohn"> Νόσος του Crohn</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Αναπνευστικά Προβλήματα"> Αναπνευστικά Προβλήματα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Δυσμηνόρροια"> Δυσμηνόρροια</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Γλαύκωμα"> Γλαύκωμα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Κοιλιοκάκη"> Κοιλιοκάκη</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Άσθμα"> Άσθμα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Μεταδοτικό νόσημα"> Οποιοδήποτε μεταδοτικό νόσημα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Ημικρανίες/Ίλιγγος"> Ημικρανίες / Ίλιγγος</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Σκληρόδερμα"> Σκληρόδερμα</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Αλλεργίες"> Αλλεργίες</label>
+      <label class="cb-cell"><input type="checkbox" name="p" value="Άλλη παθολογία"> Οποιαδήποτε άλλη παθολογία</label>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Σχόλια Παθολογικών</div>
+    <textarea id="f_sxolia1" rows="3" placeholder="Σχόλια για παθολογικά / αυτοάνοσα..."></textarea>
+  </div>
+
+  <div class="page-break-hint"><span>ΟΡΘΟΠΕΔΙΚΑ</span></div>
+
+  <!-- ORTHOPEDIKA -->
+  <div class="section">
+    <div class="section-title">Ορθοπεδικά Προβλήματα</div>
+    <p style="font-size:11.5px;color:#555;margin-bottom:8px;">Αν ΝΑΙ, τσεκάρετε:</p>
+    <div class="cb-grid cols-5" id="ortho-grid">
+      <label class="cb-cell"><input type="checkbox" name="o" value="Αυχενικό"> Αυχενικό</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Στένωση"> Στένωση</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Παγωμένος ώμος"> Παγωμένος ώμος</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Τροχαντηρίτιδα"> Τροχαντηρίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Κάταγμα"> Κάταγμα</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Οσφυαλγία"> Οσφυαλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Κύφωση/Λόρδωση"> Κύφωση / Λόρδωση</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Τενοντίτιδα/Tennis Elbow"> Τενοντίτιδα / Επικονδυλίτιδα (Tennis Elbow)</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Χονδροπάθεια"> Χονδροπάθεια</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Κότσι"> Κότσι</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Ισχιαλγία"> Ισχιαλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Σκολίωση"> Σκολίωση</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Σύνδρομο καρπιαίου σωλήνα"> Σύνδρομο καρπιαίου σωλήνα</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Μηνίσκος/Χιαστός"> Μηνίσκος / Χιαστός</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Κράμπτες"> Κράμπτες</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Κήλη Δίσκου"> Κήλη Δίσκου</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Σπονδυλόλυση/Σπονδυλολίσθηση"> Σπονδυλόλυση / Σπονδυλολίσθηση</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Σύνδρομο θωρακικής εξόδου"> Σύνδρομο θωρακικής εξόδου</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Ρήξη/Διάστρεμμα"> Ρήξη / Διάστρεμμα</label>
+      <label class="cb-cell"><input type="checkbox" name="o" value="Άλλο"> Άλλο</label>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Σχόλια Ορθοπεδικών</div>
+    <textarea id="f_sxolia2" rows="3" placeholder="Σχόλια για ορθοπεδικά..."></textarea>
+  </div>
+
+  <!-- BULLET FIELDS -->
+  <div class="section">
+    <div class="bullet-section">
+      <p>• <strong>Χειρουργικές επεμβάσεις</strong> (περιγραφή και ημερομηνία):</p>
+      <textarea id="f_xeir" rows="2"></textarea>
+    </div>
+    <div class="bullet-section">
+      <p>• <strong>Σωματικές δυσκολίες, πόνοι, τραυματισμοί, ενοχλήσεις, δυσκαμψίες κτλ.</strong> (μη διαγνωσμένα):</p>
+      <textarea id="f_somat" rows="2"></textarea>
+    </div>
+    <div class="bullet-section">
+      <p>• <strong>Εγκυμοσύνες &amp; Τοκετοί</strong> (ΦΤ ή Καισαρική και χρονολογία):</p>
+      <textarea id="f_egk" rows="2"></textarea>
+    </div>
+    <div class="bullet-section">
+      <p>• <strong>Είδος αθλήματος / γυμναστικής</strong> που ασχολείστε ή έχετε ασχοληθεί (είδος &amp; χρονική διάρκεια):</p>
+      <textarea id="f_athl" rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- HABITS -->
+  <div class="section">
+    <div class="section-title">Προσωπικές Συνήθειες (ανά ημέρα/εβδομάδα)</div>
+    <div class="habits-row">
+      <label class="habit-item"><input type="checkbox" name="h" value="Φάρμακα"> Φάρμακα</label>
+      <label class="habit-item"><input type="checkbox" name="h" value="Ναρκωτικές Ουσίες"> Ναρκωτικές Ουσίες</label>
+      <label class="habit-item"><input type="checkbox" name="h" value="Κάπνισμα"> Κάπνισμα</label>
+      <label class="habit-item"><input type="checkbox" name="h" value="Αλκοόλ"> Αλκοόλ</label>
+      <label class="habit-item"><input type="checkbox" name="h" value="Βιταμίνες"> Βιταμίνες</label>
+      <label class="habit-item"><input type="checkbox" name="h" value="Συμπληρώματα Διατροφής"> Συμπληρώματα Διατροφής</label>
+      <label class="habit-item"><input type="checkbox" name="h" value="Άλλο"> Άλλο</label>
+    </div>
+  </div>
+
+  <!-- AUTOANOSO -->
+  <div class="section">
+    <div class="bullet-section">
+      <p>• Έχετε κάποιο <strong>άλλο αυτοάνοσο νόσημα</strong>; Εάν ΝΑΙ, διευκρινίστε:</p>
+      <textarea id="f_auto" rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- VELTIOSI -->
+  <div class="section">
+    <div class="bullet-section">
+      <p>• Τι θα θέλατε να <strong>βελτιώσετε στο σώμα σας και στην καθημερινότητά σας</strong> κατά τη διάρκεια της συμμετοχής σας στα προγράμματά μας;</p>
+      <textarea id="f_velt" rows="3"></textarea>
+    </div>
+  </div>
+
+  <!-- POS ENIMERWTHIKATE -->
+  <div class="section">
+    <div class="bullet-section">
+      <p>• Πώς ενημερωθήκατε για το χώρο μας:</p>
+      <textarea id="f_pos" rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- DECLARATION -->
+  <div class="section">
+    <div class="declaration">
+      <h3>Υπεύθυνη Δήλωση</h3>
+      Με ατομική μου ευθύνη και γνωρίζοντας τις κυρώσεις που προβλέπονται από τις διατάξεις της παρ. 6 του άρθρου 22 του Ν. 1599/1986, δηλώνω υπεύθυνα ότι τα προσκομιζόμενα στοιχεία στην παρούσα δήλωση είναι ακριβή και αληθή, δηλώνοντας ότι δεν φέρω κάποια σοβαρή ασθένεια ή νόσημα που να αποκλείει τη συμμετοχή μου σε αθλητικές δραστηριότητες και που να θέτει σε κίνδυνο τον εαυτό μου, το προσωπικό της σχολής ή τους υπόλοιπους συμμετέχοντες. Επίσης δηλώνω, ότι έλαβα γνώση και αποδέχομαι τους κανόνες και όρους συμμετοχής στα προγράμματα και τους χώρους άσκησης. Σε σύντομο χρόνο θα προσκομίσω την απαιτούμενη ιατρική γνωμάτευση ότι δηλαδή είμαι ικανός/η να συμμετέχω στις δραστηριότητες και εκδηλώσεις του Flow Studio Pilates για την περίοδο 2026-2027 και, έως τότε, αναλαμβάνω πλήρη ευθύνη για τη συμμετοχή μου στις αθλητικές δραστηριότητες του χώρου.
+    </div>
+  </div>
+
+  <!-- SIGNATURE + DATE -->
+  <div class="section">
+    <div class="sig-wrapper">
+      <div>
+        <div class="sig-label">Υπογραφή <span style="font-weight:400;color:#999;">(ζωγραφίστε με το δάχτυλο ή το ποντίκι)</span></div>
+        <div class="sig-container">
+          <canvas id="sigCanvas"></canvas>
+          <div class="sig-hint" id="sigHint">✍️ Υπογράψτε εδώ</div>
+          <button class="sig-clear" onclick="clearSig()">✕ Καθαρισμός</button>
+        </div>
+      </div>
+      <div>
+        <div class="date-label">Ημερομηνία</div>
+        <input type="date" id="f_date" style="border:1.5px solid #c8c8e8;border-radius:5px;padding:8px 10px;font-size:13px;font-family:inherit;background:#f8f8fd;width:100%;">
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="action-bar">
+    <button class="btn-submit" id="submitBtn" onclick="submitForm()">📨 Αποστολή Εντύπου</button>
+    <div class="submit-note">Το έντυπο θα ανέβει αυτόματα στο Google Drive</div>
+  </div>
+
+  <div class="form-footer">
+    Όλα τα στοιχεία και οι πληροφορίες που μας δηλώνετε παραμένουν εμπιστευτικά και ασφαλή μέσα στο χώρο της σχολής.
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── Set today ──
+  document.getElementById('f_date').valueAsDate = new Date();
+
+  // ── Signature Canvas ──
+  const canvas = document.getElementById('sigCanvas');
+  const ctx    = canvas.getContext('2d');
+  const hint   = document.getElementById('sigHint');
+  let drawing  = false;
+  let hasSig   = false;
+
+  function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.offsetWidth;
+    const H = 130;
+    canvas.width  = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width  = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth   = 2.5;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+  }
+  setTimeout(resizeCanvas, 150);
+  window.addEventListener('resize', resizeCanvas);
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  canvas.addEventListener('pointerdown', function(e) {
+    e.preventDefault();
+    canvas.setPointerCapture(e.pointerId);
+    drawing = true;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    if (!hasSig) { hint.style.display = 'none'; hasSig = true; }
+  }, { passive: false });
+
+  canvas.addEventListener('pointermove', function(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const p = getPos(e);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }, { passive: false });
+
+  canvas.addEventListener('pointerup', function(e) {
+    drawing = false;
+    ctx.beginPath();
+  });
+
+  canvas.addEventListener('pointercancel', function(e) {
+    drawing = false;
+    ctx.beginPath();
+  });
+
+  function clearSig() {
+    const dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    hint.style.display = 'block';
+    hasSig = false;
+  }
+
+  // ── Collect checkboxes ──
+  function getChecked(name) {
+    return [...document.querySelectorAll(`input[name="${name}"]:checked`)]
+      .map(cb => cb.value).join(', ') || '—';
+  }
+
+  // ── Toast ──
+  function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = isError ? 'error' : '';
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, 4000);
+  }
+
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzY_dAbw9rgvAE1VXvI81S4IumRZALKmj6vPgIm3iSz0YvELc2wDj9bwWftchq4Bozd/exec';
+
+  // ── Submit ──
+  async function submitForm() {
+    const onoma = document.getElementById('f_onoma').value.trim();
+    if (!onoma) { showToast('⚠️ Παρακαλώ συμπληρώστε το Ονοματεπώνυμο', true); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Αποστολή...';
+
+    const dateStr = new Date().toLocaleString('el-GR');
+
+    const message = `
+=== ΙΣΤΟΡΙΚΟ ΥΓΕΙΑΣ — FLOW STUDIO PILATES ===
+Ημερομηνία Υποβολής: ${dateStr}
+
+--- ΠΡΟΣΩΠΙΚΑ ΣΤΟΙΧΕΙΑ ---
+Ονοματεπώνυμο: ${document.getElementById('f_onoma').value}
+Επάγγελμα:     ${document.getElementById('f_epag').value}
+Ημ. Γέννησης:  ${document.getElementById('f_dob').value}
+Διεύθυνση:     ${document.getElementById('f_dieu').value}
+Τηλέφωνο:      ${document.getElementById('f_til').value}
+Email:          ${document.getElementById('f_email').value}
+
+--- ΠΑΘΟΛΟΓΙΚΑ ---
+${getChecked('p')}
+Σχόλια: ${document.getElementById('f_sxolia1').value || '—'}
+
+--- ΟΡΘΟΠΕΔΙΚΑ ---
+${getChecked('o')}
+Σχόλια: ${document.getElementById('f_sxolia2').value || '—'}
+
+--- ΑΝΑΛΥΤΙΚΑ ---
+Χειρουργικές επεμβάσεις: ${document.getElementById('f_xeir').value || '—'}
+Σωματικές δυσκολίες:     ${document.getElementById('f_somat').value || '—'}
+Εγκυμοσύνες/Τοκετοί:    ${document.getElementById('f_egk').value || '—'}
+Άθλημα/Γυμναστική:       ${document.getElementById('f_athl').value || '—'}
+
+--- ΣΥΝΗΘΕΙΕΣ ---
+${getChecked('h')}
+
+Αυτοάνοσο νόσημα: ${document.getElementById('f_auto').value || '—'}
+Βελτίωση:         ${document.getElementById('f_velt').value || '—'}
+Πώς ενημερώθηκε:  ${document.getElementById('f_pos').value || '—'}
+
+Ημερομηνία Υπογραφής: ${document.getElementById('f_date').value}
+    `.trim();
+
+    // Φτιάξε HTML snapshot της φόρμας για Drive
+    const sigDataUrl = hasSig ? canvas.toDataURL('image/png') : '';
+    const htmlSnapshot = `<!DOCTYPE html>
+<html lang="el">
+<head><meta charset="UTF-8">
+<title>Ιστορικό Υγείας - ${onoma}</title>
+<style>
+  body{font-family:Arial,sans-serif;font-size:13px;max-width:800px;margin:30px auto;color:#1a1a2e;padding:20px;}
+  h1{text-align:center;color:#2d2d6b;border-bottom:2px solid #4a4a8a;padding-bottom:10px;}
+  .subtitle{text-align:center;font-size:11px;color:#888;letter-spacing:2px;margin-bottom:20px;}
+  .section{margin-bottom:18px;}
+  .section-title{font-size:11px;font-weight:700;color:#4a4a8a;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #e0e0f0;padding-bottom:3px;margin-bottom:8px;}
+  .field{margin-bottom:5px;} .label{font-weight:700;font-size:11px;color:#4a4a8a;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
+  pre{background:#f8f8fd;border:1px solid #e0e0f0;padding:12px;border-radius:5px;white-space:pre-wrap;font-family:Arial,sans-serif;font-size:12px;line-height:1.7;}
+  .declaration{background:#f5f5fc;border-left:3px solid #4a4a8a;padding:12px 16px;font-size:11.5px;line-height:1.7;}
+  .sig-row{display:flex;gap:40px;align-items:flex-start;margin-top:10px;}
+  .sig-box{border:1px solid #c8c8e8;border-radius:5px;padding:5px;background:#f8f8fd;}
+  footer{text-align:center;font-size:10px;color:#aaa;margin-top:20px;border-top:1px solid #e0e0f0;padding-top:10px;font-style:italic;}
+</style>
+
+<script>
+  // Resize Google Sites iframe to full width
+  function resizeParent() {
+    try {
+      window.parent.postMessage({ type: 'resize', height: document.body.scrollHeight }, '*');
+    } catch(e) {}
+  }
+  
+  // Force html and body to 100% width
+  document.documentElement.style.width = '100%';
+  document.body.style.width = '100%';
+  document.body.style.overflowX = 'hidden';
+  
+  window.addEventListener('load', resizeParent);
+  window.addEventListener('resize', resizeParent);
+</script>
+</head>
+<body>
+<div class="subtitle">FLOW STUDIO PILATES</div>
+<h1>Ιστορικό Υγείας</h1>
+<div class="section">
+  <div class="section-title">Προσωπικά Στοιχεία</div>
+  <div class="grid">
+    <div class="field"><span class="label">Ονοματεπώνυμο:</span> ${document.getElementById('f_onoma').value}</div>
+    <div class="field"><span class="label">Επάγγελμα:</span> ${document.getElementById('f_epag').value}</div>
+    <div class="field"><span class="label">Ημ. Γέννησης:</span> ${document.getElementById('f_dob').value}</div>
+    <div class="field"><span class="label">Διεύθυνση:</span> ${document.getElementById('f_dieu').value}</div>
+    <div class="field"><span class="label">Τηλέφωνο:</span> ${document.getElementById('f_til').value}</div>
+    <div class="field"><span class="label">Email:</span> ${document.getElementById('f_email').value}</div>
+  </div>
+</div>
+<div class="section">
+  <div class="section-title">Παθολογικά</div>
+  <div class="field">${getChecked('p') || '—'}</div>
+  <div class="field"><span class="label">Σχόλια:</span> ${document.getElementById('f_sxolia1').value || '—'}</div>
+</div>
+<div class="section">
+  <div class="section-title">Ορθοπεδικά</div>
+  <div class="field">${getChecked('o') || '—'}</div>
+  <div class="field"><span class="label">Σχόλια:</span> ${document.getElementById('f_sxolia2').value || '—'}</div>
+</div>
+<div class="section">
+  <div class="section-title">Αναλυτικά</div>
+  <div class="field"><span class="label">Χειρουργικές:</span> ${document.getElementById('f_xeir').value || '—'}</div>
+  <div class="field"><span class="label">Σωματικές δυσκολίες:</span> ${document.getElementById('f_somat').value || '—'}</div>
+  <div class="field"><span class="label">Εγκυμοσύνες:</span> ${document.getElementById('f_egk').value || '—'}</div>
+  <div class="field"><span class="label">Άθλημα:</span> ${document.getElementById('f_athl').value || '—'}</div>
+</div>
+<div class="section">
+  <div class="section-title">Συνήθειες</div>
+  <div class="field">${getChecked('h') || '—'}</div>
+</div>
+<div class="section">
+  <div class="field"><span class="label">Αυτοάνοσο νόσημα:</span> ${document.getElementById('f_auto').value || '—'}</div>
+  <div class="field"><span class="label">Βελτίωση:</span> ${document.getElementById('f_velt').value || '—'}</div>
+  <div class="field"><span class="label">Πώς ενημερώθηκε:</span> ${document.getElementById('f_pos').value || '—'}</div>
+</div>
+<div class="section">
+  <div class="declaration">
+    <strong>Υπεύθυνη Δήλωση</strong><br>
+    Με ατομική μου ευθύνη και γνωρίζοντας τις κυρώσεις που προβλέπονται από τις διατάξεις της παρ. 6 του άρθρου 22 του Ν. 1599/1986, δηλώνω υπεύθυνα ότι τα προσκομιζόμενα στοιχεία στην παρούσα δήλωση είναι ακριβή και αληθή...
+  </div>
+</div>
+<div class="sig-row">
+  <div>
+    <div class="label">Υπογραφή:</div>
+    ${sigDataUrl ? `<div class="sig-box"><img src="${sigDataUrl}" style="height:80px;"></div>` : '<div style="border-bottom:1px solid #333;width:200px;margin-top:40px;"></div>'}
+  </div>
+  <div>
+    <div class="label">Ημερομηνία:</div>
+    <div style="margin-top:8px;">${document.getElementById('f_date').value}</div>
+  </div>
+</div>
+<footer>Όλα τα στοιχεία παραμένουν εμπιστευτικά και ασφαλή μέσα στο χώρο της σχολής. | Υποβλήθηκε: ${dateStr}</footer>
+</body></html>`;
+
+    try {
+      // 1. Ανέβασμα στο Google Drive μέσω hidden form (bypass CORS)
+      btn.textContent = '⏳ Ανέβασμα στο Drive...';
+      await new Promise((resolve) => {
+        // Στέλνουμε μόνο τα δεδομένα (όχι HTML) για να μην υπερβούμε URL limit
+        const params = new URLSearchParams();
+        params.append('onoma', onoma);
+        params.append('date', dateStr.replace(/[/:, ]/g, '_'));
+        params.append('epag',  document.getElementById('f_epag').value  || '');
+        params.append('dob',   document.getElementById('f_dob').value   || '');
+        params.append('dieu',  document.getElementById('f_dieu').value  || '');
+        params.append('til',   document.getElementById('f_til').value   || '');
+        params.append('email', document.getElementById('f_email').value || '');
+        params.append('patho', getChecked('p'));
+        params.append('ortho', getChecked('o'));
+        params.append('habits',getChecked('h'));
+        params.append('sxolia1', document.getElementById('f_sxolia1').value || '');
+        params.append('sxolia2', document.getElementById('f_sxolia2').value || '');
+        params.append('xeir',  document.getElementById('f_xeir').value  || '');
+        params.append('somat', document.getElementById('f_somat').value || '');
+        params.append('egk',   document.getElementById('f_egk').value   || '');
+        params.append('athl',  document.getElementById('f_athl').value  || '');
+        params.append('auto',  document.getElementById('f_auto').value  || '');
+        params.append('velt',  document.getElementById('f_velt').value  || '');
+        params.append('pos',   document.getElementById('f_pos').value   || '');
+        params.append('fdate', document.getElementById('f_date').value  || '');
+        fetch(APPS_SCRIPT_URL + '?' + params.toString(), {
+          method: 'GET',
+          mode: 'no-cors'
+        }).then(() => {
+          // 2ο request: στείλε υπογραφή ξεχωριστά μέσω POST
+          if (hasSig) {
+            const sigData = JSON.stringify({
+              action: 'signature',
+              onoma: onoma,
+              date: dateStr.replace(/[/:, ]/g, '_'),
+              sig: canvas.toDataURL('image/png')
+            });
+            fetch(APPS_SCRIPT_URL, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'text/plain' },
+              body: sigData
+            }).then(() => resolve()).catch(() => resolve());
+          } else {
+            resolve();
+          }
+        }).catch(() => resolve());
+
+        setTimeout(resolve, 6000);
+      });
+
+      showToast('✅ Ανέβηκε στο Drive επιτυχώς!', false);
+      btn.textContent = '✅ Εστάλη!';
+
+    } catch(err) {
+      console.error(err);
+      showToast('❌ Σφάλμα αποστολής. Δοκιμάστε ξανά.', true);
+      btn.disabled = false;
+      btn.textContent = '📨 Αποστολή Εντύπου';
+    }
+  }
+</script>
+</body>
+</html>
