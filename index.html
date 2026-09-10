@@ -128,6 +128,21 @@
     .sig-wrapper { grid-template-columns: 1fr; }
     .habit-item { flex-wrap: wrap; }
   }
+
+  @media (max-width:700px) {
+    /* Fix mobile reordered grid borders */
+    .cb-grid.cols-4 .cb-cell {
+      border-bottom: 1px solid #d0d0e8 !important;
+    }
+
+    .cb-grid.cols-4 .cb-cell.mobile-right {
+      border-right: none !important;
+    }
+
+    .cb-grid.cols-4 .cb-cell.mobile-left {
+      border-right: 1px solid #d0d0e8 !important;
+    }
+  }
 </style>
 </head>
 <body>
