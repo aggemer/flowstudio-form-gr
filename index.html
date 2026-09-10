@@ -603,51 +603,51 @@
 </script>
 
 
+
 <script>
-function reorderGridsForMobile() {
-  const isMobile = window.innerWidth <= 700;
-  document.querySelectorAll('.cb-grid.cols-4').forEach(function(grid) {
-    const cells = Array.from(grid.querySelectorAll('.cb-cell'));
-    if (isMobile) {
-      grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+(function() {
+  function reorder() {
+    var mobile = window.innerWidth <= 700;
+    document.querySelectorAll('.cb-grid.cols-4').forEach(function(grid) {
+      var cells = grid.querySelectorAll('.cb-cell');
       cells.forEach(function(cell, i) {
-        const desktopRow = Math.floor(i / 4);
-        const desktopCol = i % 4;
-        const mobileCol = desktopCol < 2 ? 0 : 1;
-        const mobileSubCol = desktopCol % 2;
-        const mobileRow = desktopRow * 2 + mobileSubCol;
-        cell.style.order = mobileCol * 10000 + mobileRow * 2 + mobileSubCol;
+        if (mobile) {
+          var dc = i % 4;
+          var dr = Math.floor(i / 4);
+          var mc = dc < 2 ? 0 : 1;
+          var mr = dr * 2 + (dc % 2);
+          cell.style.order = mc * 10000 + mr;
+        } else {
+          cell.style.order = '';
+        }
       });
-    } else {
-      grid.style.gridTemplateColumns = '';
-      cells.forEach(function(cell) { cell.style.order = ''; });
-    }
-  });
-  document.querySelectorAll('.cb-grid.cols-5').forEach(function(grid) {
-    const cells = Array.from(grid.querySelectorAll('.cb-cell'));
-    if (isMobile) {
-      grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-      // For cols-5: split first 2 cols → mobile col1, last 3 cols → mobile col2
-      // But simpler: first 3 cols → col1, last 2 cols → col2? 
-      // Actually: cols 1+2 → mobile col1, cols 3+4+5 → mobile col2
-      cells.forEach(function(cell, i) {
-        const desktopRow = Math.floor(i / 5);
-        const desktopCol = i % 5;
-        const mobileCol = desktopCol < 2 ? 0 : 1;
-        const mobileSubCol = desktopCol < 2 ? desktopCol : desktopCol - 2;
-        const mobileRow = desktopRow;
-        cell.style.order = mobileCol * 10000 + mobileRow * 10 + mobileSubCol;
-      });
-    } else {
-      grid.style.gridTemplateColumns = '';
-      cells.forEach(function(cell) { cell.style.order = ''; });
-    }
-  });
-}
+      grid.style.gridTemplateColumns = mobile ? 'repeat(2, 1fr)' : '';
+    });
 
-reorderGridsForMobile();
-window.addEventListener('resize', reorderGridsForMobile);
+    document.querySelectorAll('.cb-grid.cols-5').forEach(function(grid) {
+      var cells = grid.querySelectorAll('.cb-cell');
+      cells.forEach(function(cell, i) {
+        if (mobile) {
+          var dc = i % 5;
+          var dr = Math.floor(i / 5);
+          var mc = dc < 3 ? 0 : 1;
+          var mr = dr * 3 + (dc % 3);
+          cell.style.order = mc * 10000 + mr;
+        } else {
+          cell.style.order = '';
+        }
+      });
+      grid.style.gridTemplateColumns = mobile ? 'repeat(2, 1fr)' : '';
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', reorder);
+  } else {
+    reorder();
+  }
+  window.addEventListener('resize', reorder);
+})();
 </script>
-
 </body>
 </html>
