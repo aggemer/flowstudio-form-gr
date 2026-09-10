@@ -681,7 +681,8 @@
           if (col === 1) cell.style.order = 1000 + row * 2;
           if (col === 3) cell.style.order = 1000 + row * 2 + 1;
 
-          if (col === 4) cell.style.order = 2000 + row;
+          // Keep the fifth desktop column after the main 4-column flow
+          if (col === 4) cell.style.order = 3000 + row;
 
           cell.classList.remove('mobile-left','mobile-right');
           if (col === 0 || col === 2 || col === 4) {
