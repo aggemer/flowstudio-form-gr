@@ -655,16 +655,35 @@
       grid.style.gridTemplateColumns = mobile ? 'repeat(2, 1fr)' : '';
     });
 
-    document.querySelectorAll('.cb-grid.cols-5').forEach(function(grid) {
+    document.querySelectorAll('.cb-grid.cols-5, .cb-grid.cols-3').forEach(function(grid) {
       var cells = grid.querySelectorAll('.cb-cell');
+      var cols = grid.classList.contains('cols-5') ? 5 : 3;
 
       cells.forEach(function(cell, i) {
         if (mobile) {
-          var dc = i % 5;
-          var dr = Math.floor(i / 5);
-          var mc = dc < 3 ? 0 : 1;
-          var mr = dr * 3 + (dc % 3);
-          cell.style.order = mc * 10000 + mr;
+          var row = Math.floor(i / cols);
+          var col = i % cols;
+
+          // Same mobile logic:
+          // odd desktop columns appear first as the left mobile column
+          // even desktop columns follow as the right mobile column
+          var visualOrder = 0;
+
+          if (col % 2 === 0) {
+            visualOrder = row * 2 + Math.floor(col / 2);
+          } else {
+            visualOrder = 1000 + row * 2 + Math.floor(col / 2);
+          }
+
+          cell.style.order = visualOrder;
+
+          cell.classList.remove('mobile-left','mobile-right');
+          if (visualOrder % 2 === 0) {
+            cell.classList.add('mobile-left');
+          } else {
+            cell.classList.add('mobile-right');
+          }
+
         } else {
           cell.style.order = '';
           cell.classList.remove('mobile-left','mobile-right');
@@ -672,6 +691,7 @@
       });
 
       grid.style.gridTemplateColumns = mobile ? 'repeat(2, 1fr)' : '';
+    });
     });
   }
 
