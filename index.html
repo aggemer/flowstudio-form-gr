@@ -124,13 +124,7 @@
     .cb-cell.mobile-left {
       border-right: 1px solid #d0d0e8 !important;
     }
-    /* Remove bottom border on last 2 items */
-    .cols-4 .cb-cell:nth-last-child(-n+2),
-    .cols-5 .cb-cell:nth-last-child(-n+2),
-    .cols-3 .cb-cell:nth-last-child(-n+2) { border-bottom: none; }
-    .cols-4 .cb-cell:last-child,
-    .cols-5 .cb-cell:last-child,
-    .cols-3 .cb-cell:last-child { border-bottom: none; }
+    /* Keep all horizontal separators visible after mobile reorder */
     .sig-wrapper { grid-template-columns: 1fr; }
     .habit-item { flex-wrap: wrap; }
   }
