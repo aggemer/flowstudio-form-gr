@@ -113,21 +113,50 @@
 
   @media (max-width: 700px) {
     .fields-grid { grid-template-columns: 1fr; }
-    .cb-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
-    .cols-4 .cb-cell:nth-child(4n) { border-right: 1px solid #d0d0e8; }
-    .cols-4 .cb-cell:nth-last-child(-n+4) { border-bottom: 1px solid #d0d0e8; }
-    .cols-4 .cb-cell:nth-child(2n) { border-right: none; }
-    .cols-4 .cb-cell:nth-last-child(-n+2) { border-bottom: none; }
-    .cb-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
-    .cols-5 .cb-cell:nth-child(5n) { border-right: 1px solid #d0d0e8; }
-    .cols-5 .cb-cell:nth-last-child(-n+5) { border-bottom: 1px solid #d0d0e8; }
-    .cols-5 .cb-cell:nth-child(2n) { border-right: none; }
-    .cols-5 .cb-cell:last-child, .cols-5 .cb-cell:nth-last-child(2) { border-bottom: none; }
-    .cb-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
-    .cols-3 .cb-cell:nth-child(3n) { border-right: 1px solid #d0d0e8; }
-    .cols-3 .cb-cell:nth-last-child(-n+3) { border-bottom: 1px solid #d0d0e8; }
-    .cols-3 .cb-cell:nth-child(2n) { border-right: none; }
-    .cols-3 .cb-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+    /* cols-4: use CSS columns so desktop col1+col2 = mobile col1, desktop col3+col4 = mobile col2 */
+    .cb-grid.cols-4 {
+      display: block;
+      column-count: 2;
+      column-gap: 0;
+    }
+    .cols-4 .cb-cell {
+      display: flex;
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      border-right: 1px solid #d0d0e8;
+      border-bottom: 1px solid #d0d0e8;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    /* cols-5: same approach */
+    .cb-grid.cols-5 {
+      display: block;
+      column-count: 2;
+      column-gap: 0;
+    }
+    .cols-5 .cb-cell {
+      display: flex;
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      border-right: 1px solid #d0d0e8;
+      border-bottom: 1px solid #d0d0e8;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .cb-grid.cols-3 {
+      display: block;
+      column-count: 2;
+      column-gap: 0;
+    }
+    .cols-3 .cb-cell {
+      display: flex;
+      break-inside: avoid;
+      border-right: 1px solid #d0d0e8;
+      border-bottom: 1px solid #d0d0e8;
+      width: 100%;
+    }
     .sig-wrapper { grid-template-columns: 1fr; }
   }
 </style>
@@ -267,7 +296,7 @@
       <label class="cb-cell"><input type="checkbox" name="p3" value="Σύνδρομο θωρακικής εξόδου"> Σύνδρομο θωρακικής εξόδου</label>
       <label class="cb-cell"><input type="checkbox" name="p3" value="Μηνίσκος"> Μηνίσκος</label>
       <label class="cb-cell"><input type="checkbox" name="p3" value="Πλατυποδία"> Πλατυποδία</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Δισκοκήλη"> Δισκοκήλη</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Κήλη (Δισκοκήλη, Βουβωνοκήλη)"> Κήλη (Δισκοκήλη, Βουβωνοκήλη)</label>
       <label class="cb-cell"><input type="checkbox" name="p3" value="Τενοντοπάθεια"> Τενοντοπάθεια</label>
       <label class="cb-cell"><input type="checkbox" name="p3" value="Τροχαντηρίτιδα"> Τροχαντηρίτιδα</label>
       <label class="cb-cell"><input type="checkbox" name="p3" value="Χιαστός"> Χιαστός</label>
