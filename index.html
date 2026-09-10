@@ -116,58 +116,24 @@
     .cb-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
     .cb-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
     .cb-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
-    /* Borders are controlled by JS after mobile reordering */
-    .cb-cell.mobile-right {
-      border-right: none !important;
-    }
-
-    .cb-cell.mobile-left {
-      border-right: 1px solid #d0d0e8 !important;
-    }
-    /* Keep all horizontal separators visible after mobile reorder */
+    /* Right border: odd items only */
+    .cols-4 .cb-cell,
+    .cols-5 .cb-cell,
+    .cols-3 .cb-cell { border-right: 1px solid #d0d0e8; }
+    .cols-4 .cb-cell:nth-child(2n),
+    .cols-5 .cb-cell:nth-child(2n),
+    .cols-3 .cb-cell:nth-child(2n) { border-right: none; }
+    /* Remove bottom border on last 2 items */
+    .cols-4 .cb-cell:nth-last-child(-n+2),
+    .cols-5 .cb-cell:nth-last-child(-n+2),
+    .cols-3 .cb-cell:nth-last-child(-n+2) { border-bottom: none; }
+    .cols-4 .cb-cell:last-child,
+    .cols-5 .cb-cell:last-child,
+    .cols-3 .cb-cell:last-child { border-bottom: none; }
     .sig-wrapper { grid-template-columns: 1fr; }
     .habit-item { flex-wrap: wrap; }
   }
-
-  @media (max-width:700px) {
-    /* Fix mobile reordered grid borders */
-    .cb-grid.cols-4 .cb-cell {
-      border-bottom: 1px solid #d0d0e8 !important;
-    }
-
-    .cb-grid.cols-4 .cb-cell.mobile-right {
-      border-right: none !important;
-    }
-
-    .cb-grid.cols-4 .cb-cell.mobile-left {
-      border-right: 1px solid #d0d0e8 !important;
-    }
-  }
 </style>
-
-<style>
-@media (max-width:700px){
-  .cb-grid .mobile-span-2 {
-    grid-column: span 2;
-  }
-}
-</style>
-
-
-<style>
-@media (max-width:700px){
-  .cb-grid.mobile-column-flow {
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0,1fr));
-    align-items:stretch;
-  }
-
-  .cb-grid.mobile-column-flow .cb-cell{
-    border-bottom:1px solid #d0d0e8;
-  }
-}
-</style>
-
 </head>
 <body>
 <div class="page">
@@ -642,40 +608,19 @@
 (function() {
   function reorder() {
     var mobile = window.innerWidth <= 700;
-
     document.querySelectorAll('.cb-grid.cols-4').forEach(function(grid) {
       var cells = grid.querySelectorAll('.cb-cell');
-
       cells.forEach(function(cell, i) {
         if (mobile) {
-          var row = Math.floor(i / 4);
-          var col = i % 4;
-
-          // Mobile order:
-          // Desktop columns 1 + 3 first
-          // Desktop columns 2 + 4 afterwards
-          var visualOrder = 0;
-
-          if (col === 0) visualOrder = row * 2;
-          if (col === 2) visualOrder = row * 2 + 1;
-          if (col === 1) visualOrder = 1000 + row * 2;
-          if (col === 3) visualOrder = 1000 + row * 2 + 1;
-
-          cell.style.order = visualOrder;
-
-          cell.classList.remove('mobile-left','mobile-right');
-          if (visualOrder % 2 === 0) {
-            cell.classList.add('mobile-left');
-          } else {
-            cell.classList.add('mobile-right');
-          }
-
+          var dc = i % 4;
+          var dr = Math.floor(i / 4);
+          var mc = dc < 2 ? 0 : 1;
+          var mr = dr * 2 + (dc % 2);
+          cell.style.order = mc * 10000 + mr;
         } else {
           cell.style.order = '';
-          cell.classList.remove('mobile-left','mobile-right');
         }
       });
-
       grid.style.gridTemplateColumns = mobile ? 'repeat(2, 1fr)' : '';
     });
 
@@ -687,31 +632,19 @@
           var row = Math.floor(i / 5);
           var col = i % 5;
 
-          // Section 2:
-          // Desktop columns 1+3 first, then desktop columns 2+4.
-          // Keep the original column relationship.
-          if (col === 0) cell.style.order = row * 2;
-          if (col === 2) cell.style.order = row * 2 + 1;
+          // Mobile order: keep desktop row structure but read as two columns.
+          // Left mobile column: desktop columns 1, 3, 5
+          // Right mobile column: desktop columns 2, 4
+          if (col === 0) cell.style.order = row * 3;
+          if (col === 2) cell.style.order = row * 3 + 1;
+          if (col === 4) cell.style.order = row * 3 + 2;
 
           if (col === 1) cell.style.order = 1000 + row * 2;
           if (col === 3) cell.style.order = 1000 + row * 2 + 1;
-
-          // Last column follows after the main flow
-          if (col === 4) cell.style.order = 2000 + row;
-
-          cell.classList.remove('mobile-left','mobile-right');
-          if (col === 0 || col === 2 || col === 4) {
-            cell.classList.add('mobile-left');
-          } else {
-            cell.classList.add('mobile-right');
-          }
-
         } else {
           cell.style.order = '';
-          cell.classList.remove('mobile-left','mobile-right');
         }
       });
-
       grid.style.gridTemplateColumns = mobile ? 'repeat(2, 1fr)' : '';
     });
   }
@@ -721,7 +654,6 @@
   } else {
     reorder();
   }
-
   window.addEventListener('resize', reorder);
 })();
 </script>
