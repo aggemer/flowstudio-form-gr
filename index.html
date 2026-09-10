@@ -119,10 +119,15 @@
     /* Right border: odd items only */
     .cols-4 .cb-cell,
     .cols-5 .cb-cell,
-    .cols-3 .cb-cell { border-right: 1px solid #d0d0e8; }
-    .cols-4 .cb-cell:nth-child(2n),
-    .cols-5 .cb-cell:nth-child(2n),
-    .cols-3 .cb-cell:nth-child(2n) { border-right: none; }
+    .cols-3 .cb-cell { 
+      border-right: 1px solid #d0d0e8; 
+    }
+
+    .cols-4 .cb-cell:nth-child(even),
+    .cols-5 .cb-cell:nth-child(even),
+    .cols-3 .cb-cell:nth-child(even) { 
+      border-right: none; 
+    }
     /* Remove bottom border on last 2 items */
     .cols-4 .cb-cell:nth-last-child(-n+2),
     .cols-5 .cb-cell:nth-last-child(-n+2),
