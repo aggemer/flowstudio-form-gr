@@ -114,50 +114,32 @@
   @media (max-width: 700px) {
     .fields-grid { grid-template-columns: 1fr; }
 
-    /* cols-4: use CSS columns so desktop col1+col2 = mobile col1, desktop col3+col4 = mobile col2 */
-    .cb-grid.cols-4 {
-      display: block;
-      column-count: 2;
-      column-gap: 0;
-    }
-    .cols-4 .cb-cell {
-      display: flex;
-      break-inside: avoid;
-      -webkit-column-break-inside: avoid;
-      border-right: 1px solid #d0d0e8;
-      border-bottom: 1px solid #d0d0e8;
-      box-sizing: border-box;
-      width: 100%;
-    }
+    /* Mobile: 2-column grid, clean borders */
+    .cb-grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+    .cb-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
+    .cb-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
 
-    /* cols-5: same approach */
-    .cb-grid.cols-5 {
-      display: block;
-      column-count: 2;
-      column-gap: 0;
-    }
-    .cols-5 .cb-cell {
-      display: flex;
-      break-inside: avoid;
-      -webkit-column-break-inside: avoid;
-      border-right: 1px solid #d0d0e8;
-      border-bottom: 1px solid #d0d0e8;
-      box-sizing: border-box;
-      width: 100%;
-    }
-    .cb-grid.cols-3 {
-      display: block;
-      column-count: 2;
-      column-gap: 0;
-    }
-    .cols-3 .cb-cell {
-      display: flex;
-      break-inside: avoid;
-      border-right: 1px solid #d0d0e8;
-      border-bottom: 1px solid #d0d0e8;
-      width: 100%;
-    }
+    /* Reset all right borders then remove for even items (right column) */
+    .cols-4 .cb-cell,
+    .cols-5 .cb-cell,
+    .cols-3 .cb-cell { border-right: 1px solid #d0d0e8; }
+
+    .cols-4 .cb-cell:nth-child(2n),
+    .cols-5 .cb-cell:nth-child(2n),
+    .cols-3 .cb-cell:nth-child(2n) { border-right: none; }
+
+    /* Remove bottom border on last 2 items */
+    .cols-4 .cb-cell:nth-last-child(-n+2),
+    .cols-5 .cb-cell:nth-last-child(-n+2),
+    .cols-3 .cb-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+    /* If odd total items, last item alone in row - also remove its bottom */
+    .cols-4 .cb-cell:last-child,
+    .cols-5 .cb-cell:last-child,
+    .cols-3 .cb-cell:last-child { border-bottom: none; }
+
     .sig-wrapper { grid-template-columns: 1fr; }
+    .habit-item { flex-wrap: wrap; }
   }
 </style>
 </head>
