@@ -602,35 +602,45 @@
   }
 </script>
 
+
 <script>
 function reorderGridsForMobile() {
   const isMobile = window.innerWidth <= 700;
-  document.querySelectorAll('.cb-grid.cols-4, .cb-grid.cols-5').forEach(function(grid) {
-    const cols = grid.classList.contains('cols-4') ? 4 : 5;
-    const halfCols = Math.ceil(cols / 2); // 2 for cols-4, 3 for cols-5
+  document.querySelectorAll('.cb-grid.cols-4').forEach(function(grid) {
     const cells = Array.from(grid.querySelectorAll('.cb-cell'));
-    const total = cells.length;
-
     if (isMobile) {
-      // Group items by pairs (for cols-4: groups of 2)
-      // item at index i (0-based) belongs to row r = floor(i/cols), col c = i%cols
-      // mobile col = floor(c / halfCols)  (0 or 1)
-      // mobile row = r * halfCols + (c % halfCols)
-      // order = mobile_col * total + mobile_row * 2 + (c % halfCols)
-      cells.forEach(function(cell, i) {
-        const r = Math.floor(i / cols);
-        const c = i % cols;
-        const mobileCol = Math.floor(c / halfCols);
-        const mobileRow = r;
-        const mobileSubCol = c % halfCols;
-        cell.style.order = mobileCol * 1000 + mobileRow * halfCols + mobileSubCol;
-      });
-      grid.style.display = 'grid';
       grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+      cells.forEach(function(cell, i) {
+        const desktopRow = Math.floor(i / 4);
+        const desktopCol = i % 4;
+        const mobileCol = desktopCol < 2 ? 0 : 1;
+        const mobileSubCol = desktopCol % 2;
+        const mobileRow = desktopRow * 2 + mobileSubCol;
+        cell.style.order = mobileCol * 10000 + mobileRow * 2 + mobileSubCol;
+      });
     } else {
-      cells.forEach(function(cell) { cell.style.order = ''; });
-      grid.style.display = '';
       grid.style.gridTemplateColumns = '';
+      cells.forEach(function(cell) { cell.style.order = ''; });
+    }
+  });
+  document.querySelectorAll('.cb-grid.cols-5').forEach(function(grid) {
+    const cells = Array.from(grid.querySelectorAll('.cb-cell'));
+    if (isMobile) {
+      grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+      // For cols-5: split first 2 cols → mobile col1, last 3 cols → mobile col2
+      // But simpler: first 3 cols → col1, last 2 cols → col2? 
+      // Actually: cols 1+2 → mobile col1, cols 3+4+5 → mobile col2
+      cells.forEach(function(cell, i) {
+        const desktopRow = Math.floor(i / 5);
+        const desktopCol = i % 5;
+        const mobileCol = desktopCol < 2 ? 0 : 1;
+        const mobileSubCol = desktopCol < 2 ? desktopCol : desktopCol - 2;
+        const mobileRow = desktopRow;
+        cell.style.order = mobileCol * 10000 + mobileRow * 10 + mobileSubCol;
+      });
+    } else {
+      grid.style.gridTemplateColumns = '';
+      cells.forEach(function(cell) { cell.style.order = ''; });
     }
   });
 }
