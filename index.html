@@ -662,9 +662,17 @@
         if (mobile) {
           var dc = i % 5;
           var dr = Math.floor(i / 5);
-          var mc = dc < 3 ? 0 : 1;
-          var mr = dr * 3 + (dc % 3);
-          cell.style.order = mc * 10000 + mr;
+          // col0+col1 → mobile left, col2+col3+col4 → mobile right
+          // Same logic as cols-4: interleave pairs
+          var visualOrder = 0;
+          if (dc === 0) visualOrder = dr * 2;        // left col, odd rows
+          if (dc === 1) visualOrder = dr * 2 + 1;   // left col, even rows
+          if (dc === 2) visualOrder = 1000 + dr * 3;
+          if (dc === 3) visualOrder = 1000 + dr * 3 + 1;
+          if (dc === 4) visualOrder = 1000 + dr * 3 + 2;
+          cell.style.order = visualOrder;
+          cell.classList.remove('mobile-left','mobile-right');
+          cell.classList.add(dc < 2 ? 'mobile-left' : 'mobile-right');
         } else {
           cell.style.order = '';
           cell.classList.remove('mobile-left','mobile-right');
