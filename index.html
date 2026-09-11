@@ -134,18 +134,6 @@
     .habit-item { flex-wrap: wrap; }
   }
 </style>
-
-<style>
-@media (max-width:700px){
-  .cols-5 .cb-cell:nth-child(2n){
-    border-right:none;
-  }
-  .cols-5 .cb-cell{
-    border-bottom:1px solid #d0d0e8;
-  }
-}
-</style>
-
 </head>
 <body>
 <div class="page">
@@ -246,7 +234,7 @@
       <label class="cb-cell"><input type="checkbox" name="p2" value="Hashimoto/Graves"> Αυτοάνοσες Παθήσεις Θυρεοειδούς (Hashimoto/Graves)</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Συστημικός Ερυθηματώδης Λύκος"> Συστημικός Ερυθηματώδης Λύκος (ΣΕΛ)</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Ψωρίαση"> Ψωρίαση</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Εγκεφαλικό Επεισόδιο"> Εγκεφαλικό Επεισόδιο (Λεπτομέρειες)</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Εγκεφαλικό Επεισόδιο"> Εγκεφαλικό Επεισόδιο</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Νευραλγία"> Νευραλγία</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Σκλήρυνση κατά πλάκας"> Σκλήρυνση κατά πλάκας</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Σκληρόδερμα"> Σκληρόδερμα</label>
@@ -638,13 +626,12 @@
 
     document.querySelectorAll('.cb-grid.cols-5').forEach(function(grid) {
       var cells = grid.querySelectorAll('.cb-cell');
-
       cells.forEach(function(cell, i) {
         if (mobile) {
           var dc = i % 5;
           var dr = Math.floor(i / 5);
-          var mc = dc < 2 ? 0 : 1;
-          var mr = mc === 0 ? dr * 2 + dc : dr * 3 + (dc - 2);
+          var mc = dc < 3 ? 0 : 1;
+          var mr = dr * 3 + (dc % 3);
           cell.style.order = mc * 10000 + mr;
         } else {
           cell.style.order = '';
