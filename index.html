@@ -243,7 +243,7 @@
     <div class="section-title">2. Αυτοάνοσα & Νευρολογικά Νοσήματα</div>
     <p class="note">Επιλέξτε όσα ισχύουν:</p>
     <div class="cb-grid cols-5">
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Hashimoto/Graves"> Αυτοάνοσες Παθήσεις Θυρεοειδούς (Hashimoto/Νόσος του Graves)</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Hashimoto/Graves"> Αυτοάνοσες Παθήσεις Θυρεοειδούς (Hashimoto/Graves)</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Συστημικός Ερυθηματώδης Λύκος"> Συστημικός Ερυθηματώδης Λύκος (ΣΕΛ)</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Ψωρίαση"> Ψωρίαση</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Εγκεφαλικό Επεισόδιο"> Εγκεφαλικό Επεισόδιο (Λεπτομέρειες)</label>
@@ -641,20 +641,15 @@
 
       cells.forEach(function(cell, i) {
         if (mobile) {
-          var row = Math.floor(i / 5);
-          var col = i % 5;
-
-          // Mobile order:
-          // Left column: desktop column 1 followed by desktop column 3
-          // Right column: desktop column 2 followed by desktop column 4
-          // Last desktop column follows at the end.
-          if (col === 0) cell.style.order = row;
-          if (col === 2) cell.style.order = 100 + row;
-
-          if (col === 1) cell.style.order = 1000 + row;
-          if (col === 3) cell.style.order = 1100 + row;
-
-          if (col === 4) cell.style.order = 2000 + row;
+          var dr = Math.floor(i / 5);
+          var dc = i % 5;
+          // col0+col1 → mobile left column
+          // col2+col3+col4 → mobile right column
+          if (dc === 0) cell.style.order = dr * 2;
+          if (dc === 1) cell.style.order = dr * 2 + 1;
+          if (dc === 2) cell.style.order = 10000 + dr * 3;
+          if (dc === 3) cell.style.order = 10000 + dr * 3 + 1;
+          if (dc === 4) cell.style.order = 10000 + dr * 3 + 2;
         } else {
           cell.style.order = '';
         }
