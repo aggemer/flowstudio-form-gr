@@ -641,15 +641,11 @@
 
       cells.forEach(function(cell, i) {
         if (mobile) {
-          var dr = Math.floor(i / 5);
           var dc = i % 5;
-          // col0+col1 → mobile left column
-          // col2+col3+col4 → mobile right column
-          if (dc === 0) cell.style.order = dr * 2;
-          if (dc === 1) cell.style.order = dr * 2 + 1;
-          if (dc === 2) cell.style.order = 10000 + dr * 3;
-          if (dc === 3) cell.style.order = 10000 + dr * 3 + 1;
-          if (dc === 4) cell.style.order = 10000 + dr * 3 + 2;
+          var dr = Math.floor(i / 5);
+          var mc = dc < 2 ? 0 : 1;
+          var mr = mc === 0 ? dr * 2 + dc : dr * 3 + (dc - 2);
+          cell.style.order = mc * 10000 + mr;
         } else {
           cell.style.order = '';
         }
