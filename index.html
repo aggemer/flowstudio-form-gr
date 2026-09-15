@@ -29,7 +29,13 @@
   .cb-grid { display: grid; border: 1px solid #d0d0e8; border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
   .cb-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
   .cb-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.p3-mobile-only {
+    display: none !important;
+}
+
+
   .cb-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .cb-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
 
   .cb-cell { display: flex; align-items: flex-start; gap: 6px; padding: 6px 8px; border-right: 1px solid #d0d0e8; border-bottom: 1px solid #d0d0e8; cursor: pointer; font-size: 11px; line-height: 1.35; }
   .cb-cell:hover { background: #f0f0fa; }
@@ -37,9 +43,11 @@
   .cols-4 .cb-cell:nth-child(4n) { border-right: none; }
   .cols-5 .cb-cell:nth-child(5n) { border-right: none; }
   .cols-3 .cb-cell:nth-child(3n) { border-right: none; }
+  .cols-2 .cb-cell:nth-child(2n) { border-right: none; }
   .cols-4 .cb-cell:nth-last-child(-n+4) { border-bottom: none; }
   .cols-5 .cb-cell:nth-last-child(-n+5) { border-bottom: none; }
   .cols-3 .cb-cell:nth-last-child(-n+3) { border-bottom: none; }
+  .cols-2 .cb-cell:nth-last-child(-n+2) { border-bottom: none; }
 
   /* Symptoms checkboxes (horizontal) */
   .symptoms-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; }
@@ -143,6 +151,50 @@
       border-right: 1px solid #d0d0e8 !important;
     }
   }
+
+  .p3-mobile-only { display:none; }
+  @media (max-width:700px){
+    .p3-desktop-only { display:none !important; }
+    .p3-mobile-only { display:grid !important; grid-template-columns:repeat(2,1fr) !important; }
+  }
+
+@media(max-width:700px){
+  .p3-desktop-only {
+    display:none !important;
+  }
+  .p3-mobile-only {
+    display:block !important;
+    grid-template-columns:1fr !important;
+  }
+  #grid-p3-mobile {
+    display:grid !important;
+    grid-template-columns:1fr !important;
+  }
+}
+
+/* FINAL P3 MOBILE OVERRIDE */
+.p3-mobile-only { display:none !important; }
+@media (max-width:700px){
+  .p3-desktop-only { display:none !important; }
+  .p3-mobile-only { display:block !important; }
+  #grid-p3-mobile { display:block !important; }
+  #grid-p3-mobile .cb-cell {
+    display:flex !important;
+    width:100% !important;
+    border-right:none !important;
+  }
+}
+
+/* P2 custom mobile like P3 */
+.p2-mobile-only{display:none;}
+@media(max-width:700px){
+  #grid-p2{display:none !important;}
+  .p2-mobile-only{display:grid !important;grid-template-columns:1fr 1fr;gap:0;border:1px solid #d0d0e8;border-radius:6px;overflow:hidden;}
+  .p2-mobile-only .cb-cell{border-bottom:1px solid #d0d0e8;border-right:1px solid #d0d0e8;}
+  .p2-mobile-only .cb-cell:nth-child(2n){border-right:none;}
+  .p2-mobile-only .cb-cell:nth-last-child(-n+2){border-bottom:none;}
+  .p2-mobile-only .cb-cell:last-child{grid-column:1/-1;border-right:none;border-bottom:none;border-top:1px solid #d0d0e8;}
+}
 </style>
 </head>
 <body>
@@ -194,7 +246,7 @@
   <div class="section">
     <div class="section-title">1. Καρδιολογικά, Αναπνευστικά, Γαστρεντερολογικά, Γυναικολογικά & Λοιπά Νοσήματα</div>
     <p class="note">Επιλέξτε όσα ισχύουν:</p>
-    <div class="cb-grid cols-4">
+    <div class="cb-grid cols-4" id="grid-p1">
       <label class="cb-cell"><input type="checkbox" name="p1" value="Υπέρταση"> Υπέρταση (Τιμές)</label>
       <label class="cb-cell"><input type="checkbox" name="p1" value="Σακχαρώδης Διαβήτης"> Σακχαρώδης Διαβήτης (Τύπος & Τιμές)</label>
       <label class="cb-cell"><input type="checkbox" name="p1" value="Νεφρολιθίαση"> Νεφρολιθίαση</label>
@@ -240,77 +292,104 @@
   <div class="section">
     <div class="section-title">2. Αυτοάνοσα & Νευρολογικά Νοσήματα</div>
     <p class="note">Επιλέξτε όσα ισχύουν:</p>
-    <div class="cb-grid cols-5">
+    <div class="cb-grid cols-2" id="grid-p2">
       <label class="cb-cell"><input type="checkbox" name="p2" value="Hashimoto/Graves"> Αυτοάνοσες Παθήσεις Θυρεοειδούς (Hashimoto/Graves)</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Συστημικός Ερυθηματώδης Λύκος"> Συστημικός Ερυθηματώδης Λύκος (ΣΕΛ)</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Ψωρίαση"> Ψωρίαση</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Συστημικός Ερυθηματώδης Λύκος"> Συστημικός Ερυθηματώδης Λύκος (ΣΕΛ)</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Εγκεφαλικό Επεισόδιο"> Εγκεφαλικό Επεισόδιο</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Νευραλγία"> Νευραλγία</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Σκλήρυνση κατά πλάκας"> Σκλήρυνση κατά πλάκας</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νευραλγία"> Νευραλγία</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Σκληρόδερμα"> Σκληρόδερμα</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Ψωριασική Αρθρίτιδα"> Ψωριασική Αρθρίτιδα</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Πάρκινσον"> Νόσος Πάρκινσον</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Ινομυαλγία"> Ινομυαλγία</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Μυασθένεια Gravis"> Μυασθένεια Gravis</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Σύνδρομο Raynaud"> Σύνδρομο Raynaud</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Ρευματοειδής Αρθρίτιδα"> Ρευματοειδής Αρθρίτιδα</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Alzheimer"> Νόσος Alzheimer</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Ημικρανίες"> Ημικρανίες</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Σύνδρομο Raynaud"> Σύνδρομο Raynaud</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Πάρκινσον"> Νόσος Πάρκινσον</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Addison"> Νόσος Addison</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ινομυαλγία"> Ινομυαλγία</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Σύνδρομο Sjögren"> Σύνδρομο Sjögren</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Crohn"> Νόσος του Crohn</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Άνοια"> Άνοια</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Ίλιγγος"> Ίλιγγος</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Alzheimer"> Νόσος Alzheimer</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Αυτοάνοση Ηπατίτιδα"> Αυτοάνοση Ηπατίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ημικρανίες"> Ημικρανίες</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Λεύκη"> Λεύκη</label>
-      <label class="cb-cell"><input type="checkbox" name="p2" value="Ελκώδης Κολίτιδα"> Ελκώδης Κολίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Crohn"> Νόσος του Crohn</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ίλιγγος"> Ίλιγγος</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Επιληπτικά Επεισόδια"> Επιληπτικά Επεισόδια</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ελκώδης Κολίτιδα"> Ελκώδης Κολίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Άνοια"> Άνοια</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Άλλο αυτοάνοσο"> Οτιδήποτε άλλο</label>
+    </div>
+    <div class="p2-mobile-only" id="grid-p2-mobile">
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Hashimoto/Graves">Αυτοάνοσες Παθήσεις Θυρεοειδούς (Hashimoto/Graves)</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ρευματοειδής Αρθρίτιδα">Ρευματοειδής Αρθρίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Σκλήρυνση κατά πλάκας">Σκλήρυνση κατά πλάκας</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Crohn">Νόσος του Crohn</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Μυασθένεια Gravis">Μυασθένεια Gravis</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ελκώδης Κολίτιδα">Ελκώδης Κολίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Addison">Νόσος Addison</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Εγκεφαλικό Επεισόδιο">Εγκεφαλικό Επεισόδιο (Λεπτομέρειες)</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Αυτοάνοση Ηπατίτιδα">Αυτοάνοση Ηπατίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Πάρκινσον">Νόσος Πάρκινσον</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Συστημικός Ερυθηματώδης Λύκος">Συστημικός Ερυθηματώδης Λύκος (ΣΕΛ)</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νόσος Alzheimer">Νόσος Alzheimer</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Σκληρόδερμα">Σκληρόδερμα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Άνοια">Άνοια</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Σύνδρομο Raynaud">Σύνδρομο Raynaud</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Επιληπτικά Επεισόδια">Επιληπτικά Επεισόδια</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Σύνδρομο Sjögren">Σύνδρομο Sjögren</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Νευραλγία">Νευραλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Λεύκη">Λεύκη</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ινομυαλγία">Ινομυαλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ψωρίαση">Ψωρίαση</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ημικρανίες">Ημικρανίες</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ψωριασική Αρθρίτιδα">Ψωριασική Αρθρίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p2" value="Ίλιγγος">Ίλιγγος</label>
+      <label class="cb-cell" style="grid-column:1/-1;border-right:none;"><input type="checkbox" name="p2" value="Άλλο αυτοάνοσο">Οτιδήποτε άλλο</label>
     </div>
     <p class="note">• Για κάθε επιλογή, δώστε λεπτομέρειες (συχνότητα, ημερομηνία διάγνωσης, σοβαρότητα, φαρμακευτική αγωγή).</p>
     <textarea id="f_sxolia2" rows="3" placeholder="Σχόλια και συμπληρωματικές πληροφορίες..."></textarea>
   </div>
 
-  <!-- ORTHOPAEDIC -->
+  <!-- MUSCULOSKELETAL -->
   <div class="section">
     <div class="section-title">3. Παθήσεις Μυοσκελετικού Συστήματος & Ορθοπεδικά Προβλήματα</div>
     <p class="note">Επιλέξτε όσα ισχύουν:</p>
-    <div class="cb-grid cols-5">
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Αυχεναλγία"> Αυχεναλγία</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Κύφωση"> Κύφωση</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Παγωμένος ώμος"> Παγωμένος ώμος</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Κύστη Baker"> Κύστη Baker</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Θλάσεις"> Θλάσεις</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Οσφυαλγία"> Οσφυαλγία</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Λόρδωση"> Λόρδωση</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Σύνδρομο καρπιαίου σωλήνα"> Σύνδρομο καρπιαίου σωλήνα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Ρήξη"> Ρήξη</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Κράμπες"> Κράμπες</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Ισχιαλγία"> Ισχιαλγία</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Σκολίωση"> Σκολίωση</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Σύνδρομο θωρακικής εξόδου"> Σύνδρομο θωρακικής εξόδου</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Μηνίσκος"> Μηνίσκος</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Πλατυποδία"> Πλατυποδία</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Κήλη (Δισκοκήλη, Βουβωνοκήλη)"> Κήλη (Δισκοκήλη, Βουβωνοκήλη)</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Τενοντοπάθεια"> Τενοντοπάθεια</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Τροχαντηρίτιδα"> Τροχαντηρίτιδα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Χιαστός"> Χιαστός</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Πελματιαία Απονευρωσίτιδα"> Πελματιαία Απονευρωσίτιδα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Στένωση"> Στένωση</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Τενοντίτιδα"> Τενοντίτιδα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Οστεοαρθρίτιδα"> Οστεοαρθρίτιδα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Διάστρεμμα"> Διάστρεμμα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Άκανθα Πτέρνα"> Άκανθα Πτέρνα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Σπονδυλόλυση"> Σπονδυλόλυση</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Ασβεστοποιός Τενοντίτιδα"> Ασβεστοποιός Τενοντίτιδα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Αρθροπλαστική"> Αρθροπλαστική</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Κάταγμα"> Κάταγμα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Κότσι"> Κότσι</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Σπονδυλολίσθηση"> Σπονδυλολίσθηση</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Επικονδυλίτιδα (Tennis Elbow)"> Επικονδυλίτιδα (Tennis Elbow)</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Χονδροπάθεια"> Χονδροπάθεια</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Οστικό Οίδημα"> Οστικό Οίδημα</label>
-      <label class="cb-cell"><input type="checkbox" name="p3" value="Άλλη Πάθηση"> Άλλη Πάθηση ή Τραυματισμός</label>
+    <div class="p3-mobile-only" id="grid-p3-mobile">
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Αυχεναλγία">Αυχεναλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Τροχαντηρίτιδα">Τροχαντηρίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Οσφυαλγία">Οσφυαλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Οστεοαρθρίτιδα">Οστεοαρθρίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Ισχιαλγία">Ισχιαλγία</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Αρθροπλαστική">Αρθροπλαστική</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Δισκοκήλη">Κήλη (Δισκοκήλη, Βουβωνοκήλη)</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Χονδροπάθεια">Χονδροπάθεια</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Στένωση">Στένωση</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Κύστη Baker">Κύστη Baker</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Σπονδυλόλυση">Σπονδυλόλυση</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Ρήξη">Ρήξη</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Σπονδυλολίσθηση">Σπονδυλολίσθηση</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Μηνίσκος">Μηνίσκος</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Κύφωση">Κύφωση</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Χιαστός">Χιαστός</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Λόρδωση">Λόρδωση</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Διάστρεμμα">Διάστρεμμα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Σκολίωση">Σκολίωση</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Κάταγμα">Κάταγμα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Τενοντοπάθεια">Τενοντοπάθεια</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Οστικό Οίδημα">Οστικό Οίδημα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Τενοντίτιδα">Τενοντίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Θλάσεις">Θλάσεις</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Ασβεστοποιός Τενοντίτιδα">Ασβεστοποιός Τενοντίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Κράμπες">Κράμπες</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Επικονδυλίτιδα (Tennis Elbow)">Επικονδυλίτιδα (Tennis Elbow)</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Πλατυποδία">Πλατυποδία</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Παγωμένος ώμος">Παγωμένος ώμος</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Πελματιαία Απονευρωσίτιδα">Πελματιαία Απονευρωσίτιδα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Σύνδρομο καρπιαίου σωλήνα">Σύνδρομο καρπιαίου σωλήνα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Άκανθα Πτέρνα">Άκανθα Πτέρνα</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Σύνδρομο θωρακικής εξόδου">Σύνδρομο θωρακικής εξόδου</label>
+      <label class="cb-cell"><input type="checkbox" name="p3" value="Κότσι">Κότσι</label>
+      <label class="cb-cell p3-full"><input type="checkbox" name="p3" value="Άλλη Πάθηση ή Τραυματισμός">Άλλη Πάθηση ή Τραυματισμός</label>
     </div>
     <p class="note">• Για κάθε επιλογή, δώστε λεπτομέρειες (σημείο, ημερομηνία, σοβαρότητα ή θεραπεία).<br>• Διευκρινίστε αν επηρεάζει δεξιά ή αριστερή πλευρά (Δ/Α).<br>• Σημειώστε αν έχει προκληθεί από ατύχημα.</p>
     <textarea id="f_sxolia3" rows="3" placeholder="Σχόλια και συμπληρωματικές πληροφορίες..."></textarea>
@@ -662,17 +741,9 @@
         if (mobile) {
           var dc = i % 5;
           var dr = Math.floor(i / 5);
-          // col0+col1 → mobile left, col2+col3+col4 → mobile right
-          // Same logic as cols-4: interleave pairs
-          var visualOrder = 0;
-          if (dc === 0) visualOrder = dr * 2;        // left col, odd rows
-          if (dc === 1) visualOrder = dr * 2 + 1;   // left col, even rows
-          if (dc === 2) visualOrder = 1000 + dr * 3;
-          if (dc === 3) visualOrder = 1000 + dr * 3 + 1;
-          if (dc === 4) visualOrder = 1000 + dr * 3 + 2;
-          cell.style.order = visualOrder;
-          cell.classList.remove('mobile-left','mobile-right');
-          cell.classList.add(dc < 2 ? 'mobile-left' : 'mobile-right');
+          var mc = dc < 3 ? 0 : 1;
+          var mr = dr * 3 + (dc % 3);
+          cell.style.order = mc * 10000 + mr;
         } else {
           cell.style.order = '';
           cell.classList.remove('mobile-left','mobile-right');
@@ -694,3 +765,38 @@
 </script>
 </body>
 </html>
+
+<style>
+@media(max-width:700px){#grid-p3-mobile{display:grid;grid-template-columns:1fr 1fr;gap:0;}#grid-p3-mobile .p3-mobile-col{display:flex;flex-direction:column;}#grid-p3-mobile .p3-mobile-full{grid-column:1 / -1;} }
+</style>
+
+
+<style>
+/* FINAL P3 TWO COLUMN MOBILE FIX */
+@media (max-width:700px){
+  #grid-p3-mobile{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:0 !important;
+    border:1px solid #d0d0e8 !important;
+    border-radius:6px !important;
+    overflow:hidden !important;
+  }
+  #grid-p3-mobile .cb-cell{
+    border-bottom:1px solid #d0d0e8 !important;
+    border-right:1px solid #d0d0e8 !important;
+  }
+  #grid-p3-mobile .cb-cell:nth-child(2n){
+    border-right:none !important;
+  }
+  #grid-p3-mobile .cb-cell:nth-last-child(-n+2){
+    border-bottom:none !important;
+  }
+  #grid-p3-mobile .p3-full{
+    grid-column:1/-1 !important;
+    border-right:none !important;
+    border-bottom:none !important;
+    border-top:1px solid #d0d0e8 !important;
+  }
+}
+</style>
