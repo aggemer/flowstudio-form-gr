@@ -29,13 +29,7 @@
   .cb-grid { display: grid; border: 1px solid #d0d0e8; border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
   .cb-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
   .cb-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
-.p3-mobile-only {
-    display: none !important;
-}
-
-
   .cb-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
-  .cb-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
 
   .cb-cell { display: flex; align-items: flex-start; gap: 6px; padding: 6px 8px; border-right: 1px solid #d0d0e8; border-bottom: 1px solid #d0d0e8; cursor: pointer; font-size: 11px; line-height: 1.35; }
   .cb-cell:hover { background: #f0f0fa; }
@@ -43,11 +37,9 @@
   .cols-4 .cb-cell:nth-child(4n) { border-right: none; }
   .cols-5 .cb-cell:nth-child(5n) { border-right: none; }
   .cols-3 .cb-cell:nth-child(3n) { border-right: none; }
-  .cols-2 .cb-cell:nth-child(2n) { border-right: none; }
   .cols-4 .cb-cell:nth-last-child(-n+4) { border-bottom: none; }
   .cols-5 .cb-cell:nth-last-child(-n+5) { border-bottom: none; }
   .cols-3 .cb-cell:nth-last-child(-n+3) { border-bottom: none; }
-  .cols-2 .cb-cell:nth-last-child(-n+2) { border-bottom: none; }
 
   /* Symptoms checkboxes (horizontal) */
   .symptoms-row { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0; }
@@ -57,6 +49,9 @@
   /* Habits */
   .habits-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
   .habit-item { display: flex; align-items: flex-start; gap: 8px; }
+  /* Checkbox + label travel together as one flex item, so a long label can
+     never wrap away from its own checkbox when the row runs out of space. */
+  .habit-check { display: flex; align-items: flex-start; gap: 8px; }
   .habit-item input[type="checkbox"] { margin-top: 3px; width: 14px; height: 14px; accent-color: #4a4a8a; flex-shrink: 0; }
   .habit-item .habit-label { font-size: 12.5px; }
   .habit-item input[type="text"] { border: 1.5px solid #c8c8e8; border-radius: 5px; padding: 4px 8px; font-size: 12px; font-family: inherit; background: #f8f8fd; flex: 1; margin-left: 4px; }
@@ -135,6 +130,10 @@
     /* Keep all horizontal separators visible after mobile reorder */
     .sig-wrapper { grid-template-columns: 1fr; }
     .habit-item { flex-wrap: wrap; }
+    /* Force the detail input onto its own full-width line every time,
+       instead of leaving it to flex-wrap to sometimes squeeze into
+       whatever space is left at the end of the label's last line. */
+    .habit-item input[type="text"] { flex: 1 1 100%; margin-left: 0; width: 100%; }
   }
 
   @media (max-width:700px) {
@@ -152,38 +151,123 @@
     }
   }
 
-  .p3-mobile-only { display:none; }
-  @media (max-width:700px){
-    .p3-desktop-only { display:none !important; }
-    .p3-mobile-only { display:grid !important; grid-template-columns:repeat(2,1fr) !important; }
+  /* ===== Section 3 (Μυοσκελετικό) grid =====
+     One single grid/one set of checkboxes for both desktop and mobile — only the
+     layout changes at the breakpoint, so there's no risk of the desktop and
+     mobile checkbox lists ever getting out of sync with each other.
+     Mobile (default): natural 2-column reading order, following DOM order.
+     Lines drawn with border-top/border-left only (never border-right/bottom),
+     so an incomplete last row never needs special-casing.
+     Desktop: explicit 5-column thematic layout (spine / posture-tendon /
+     joint-entrapment / knee-ligament / foot-misc), each checkbox pinned to a
+     specific row+column to match the printed reference sheet. Since every one
+     of the 35 items gets its own cell (full 5x7 grid, no gaps), lines are
+     drawn with a simpler grid gap + background-color trick there. */
+  #grid-p3 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid #d0d0e8;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  #grid-p3 .cb-cell {
+    border-top: 1px solid #d0d0e8;
+    border-left: 1px solid #d0d0e8;
+  }
+  #grid-p3 .cb-cell:nth-child(-n+2) { border-top: none; }
+  #grid-p3 .cb-cell:nth-child(2n+1) { border-left: none; }
+  #grid-p3 .p3-full { grid-column: 1 / -1; border-left: none; }
+
+  @media (min-width:701px){
+    #grid-p3 {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: #d0d0e8;
+    }
+    #grid-p3 .cb-cell {
+      background: #fff;
+      border: none;
+    }
+    /* row / column position per item — see comment for the item name */
+    #grid-p3 .cb-cell:nth-child(1)  { grid-area: 1 / 1; } /* Αυχεναλγία */
+    #grid-p3 .cb-cell:nth-child(2)  { grid-area: 4 / 3; } /* Τροχαντηρίτιδα */
+    #grid-p3 .cb-cell:nth-child(3)  { grid-area: 2 / 1; } /* Οσφυαλγία */
+    #grid-p3 .cb-cell:nth-child(4)  { grid-area: 5 / 3; } /* Οστεοαρθρίτιδα */
+    #grid-p3 .cb-cell:nth-child(5)  { grid-area: 3 / 1; } /* Ισχιαλγία */
+    #grid-p3 .cb-cell:nth-child(6)  { grid-area: 6 / 3; } /* Αρθροπλαστική */
+    #grid-p3 .cb-cell:nth-child(7)  { grid-area: 4 / 1; } /* Δισκοκήλη (Κήλη, Βουβωνοκήλη) */
+    #grid-p3 .cb-cell:nth-child(8)  { grid-area: 7 / 3; } /* Χονδροπάθεια */
+    #grid-p3 .cb-cell:nth-child(9)  { grid-area: 5 / 1; } /* Στένωση */
+    #grid-p3 .cb-cell:nth-child(10) { grid-area: 1 / 4; } /* Κύστη Baker */
+    #grid-p3 .cb-cell:nth-child(11) { grid-area: 6 / 1; } /* Σπονδυλόλυση */
+    #grid-p3 .cb-cell:nth-child(12) { grid-area: 2 / 4; } /* Ρήξη */
+    #grid-p3 .cb-cell:nth-child(13) { grid-area: 7 / 1; } /* Σπονδυλολίσθηση */
+    #grid-p3 .cb-cell:nth-child(14) { grid-area: 3 / 4; } /* Μηνίσκος */
+    #grid-p3 .cb-cell:nth-child(15) { grid-area: 1 / 2; } /* Κύφωση */
+    #grid-p3 .cb-cell:nth-child(16) { grid-area: 4 / 4; } /* Χιαστός */
+    #grid-p3 .cb-cell:nth-child(17) { grid-area: 2 / 2; } /* Λόρδωση */
+    #grid-p3 .cb-cell:nth-child(18) { grid-area: 5 / 4; } /* Διάστρεμμα */
+    #grid-p3 .cb-cell:nth-child(19) { grid-area: 3 / 2; } /* Σκολίωση */
+    #grid-p3 .cb-cell:nth-child(20) { grid-area: 6 / 4; } /* Κάταγμα */
+    #grid-p3 .cb-cell:nth-child(21) { grid-area: 4 / 2; } /* Τενοντοπάθεια */
+    #grid-p3 .cb-cell:nth-child(22) { grid-area: 7 / 4; } /* Οστικό Οίδημα */
+    #grid-p3 .cb-cell:nth-child(23) { grid-area: 5 / 2; } /* Τενοντίτιδα */
+    #grid-p3 .cb-cell:nth-child(24) { grid-area: 1 / 5; } /* Θλάσεις */
+    #grid-p3 .cb-cell:nth-child(25) { grid-area: 6 / 2; } /* Ασβεστοποιός Τενοντίτιδα */
+    #grid-p3 .cb-cell:nth-child(26) { grid-area: 2 / 5; } /* Κράμπες */
+    #grid-p3 .cb-cell:nth-child(27) { grid-area: 7 / 2; } /* Επικονδυλίτιδα (Tennis Elbow) */
+    #grid-p3 .cb-cell:nth-child(28) { grid-area: 3 / 5; } /* Πλατυποδία */
+    #grid-p3 .cb-cell:nth-child(29) { grid-area: 1 / 3; } /* Παγωμένος ώμος */
+    #grid-p3 .cb-cell:nth-child(30) { grid-area: 4 / 5; } /* Πελματιαία Απονευρωσίτιδα */
+    #grid-p3 .cb-cell:nth-child(31) { grid-area: 2 / 3; } /* Σύνδρομο καρπιαίου σωλήνα */
+    #grid-p3 .cb-cell:nth-child(32) { grid-area: 5 / 5; } /* Άκανθα Πτέρνα */
+    #grid-p3 .cb-cell:nth-child(33) { grid-area: 3 / 3; } /* Σύνδρομο θωρακικής εξόδου */
+    #grid-p3 .cb-cell:nth-child(34) { grid-area: 6 / 5; } /* Κότσι */
+    #grid-p3 .cb-cell:nth-child(35) { grid-area: 7 / 5; } /* Άλλη Πάθηση ή Τραυματισμός (no longer full-width on desktop) */
   }
 
-@media(max-width:700px){
-  .p3-desktop-only {
-    display:none !important;
-  }
-  .p3-mobile-only {
-    display:block !important;
-    grid-template-columns:1fr !important;
-  }
-  #grid-p3-mobile {
-    display:grid !important;
-    grid-template-columns:1fr !important;
-  }
+/* ===== Section 2 (Αυτοάνοσα) desktop grid =====
+   5-column thematic layout matching the printed reference sheet — each of the
+   25 checkboxes pinned to a specific row+column. #grid-p2 is only ever shown
+   at desktop widths (the mobile media query below hides it and shows the
+   separate .p2-mobile-only list instead), so this needs no media query of
+   its own. Uses the same gap + background-color line trick as section 3 —
+   safe here since 25 items fill the 5x5 grid exactly, no empty cells. */
+#grid-p2 {
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: #d0d0e8;
 }
-
-/* FINAL P3 MOBILE OVERRIDE */
-.p3-mobile-only { display:none !important; }
-@media (max-width:700px){
-  .p3-desktop-only { display:none !important; }
-  .p3-mobile-only { display:block !important; }
-  #grid-p3-mobile { display:block !important; }
-  #grid-p3-mobile .cb-cell {
-    display:flex !important;
-    width:100% !important;
-    border-right:none !important;
-  }
+#grid-p2 .cb-cell {
+  background: #fff;
+  border: none;
 }
+#grid-p2 .cb-cell:nth-child(1)  { grid-area: 1 / 1; } /* Hashimoto/Graves */
+#grid-p2 .cb-cell:nth-child(2)  { grid-area: 1 / 3; } /* Ψωρίαση */
+#grid-p2 .cb-cell:nth-child(3)  { grid-area: 1 / 2; } /* Συστημικός Ερυθηματώδης Λύκος (ΣΕΛ) */
+#grid-p2 .cb-cell:nth-child(4)  { grid-area: 1 / 4; } /* Εγκεφαλικό Επεισόδιο */
+#grid-p2 .cb-cell:nth-child(5)  { grid-area: 2 / 1; } /* Σκλήρυνση κατά πλάκας */
+#grid-p2 .cb-cell:nth-child(6)  { grid-area: 1 / 5; } /* Νευραλγία */
+#grid-p2 .cb-cell:nth-child(7)  { grid-area: 2 / 2; } /* Σκληρόδερμα */
+#grid-p2 .cb-cell:nth-child(8)  { grid-area: 2 / 3; } /* Ψωριασική Αρθρίτιδα */
+#grid-p2 .cb-cell:nth-child(9)  { grid-area: 3 / 1; } /* Μυασθένεια Gravis */
+#grid-p2 .cb-cell:nth-child(10) { grid-area: 3 / 3; } /* Ρευματοειδής Αρθρίτιδα */
+#grid-p2 .cb-cell:nth-child(11) { grid-area: 3 / 2; } /* Σύνδρομο Raynaud */
+#grid-p2 .cb-cell:nth-child(12) { grid-area: 2 / 4; } /* Νόσος Πάρκινσον */
+#grid-p2 .cb-cell:nth-child(13) { grid-area: 4 / 1; } /* Νόσος Addison */
+#grid-p2 .cb-cell:nth-child(14) { grid-area: 2 / 5; } /* Ινομυαλγία */
+#grid-p2 .cb-cell:nth-child(15) { grid-area: 4 / 2; } /* Σύνδρομο Sjögren */
+#grid-p2 .cb-cell:nth-child(16) { grid-area: 3 / 4; } /* Νόσος Alzheimer */
+#grid-p2 .cb-cell:nth-child(17) { grid-area: 5 / 1; } /* Αυτοάνοση Ηπατίτιδα */
+#grid-p2 .cb-cell:nth-child(18) { grid-area: 3 / 5; } /* Ημικρανίες */
+#grid-p2 .cb-cell:nth-child(19) { grid-area: 5 / 2; } /* Λεύκη */
+#grid-p2 .cb-cell:nth-child(20) { grid-area: 4 / 3; } /* Νόσος του Crohn */
+#grid-p2 .cb-cell:nth-child(21) { grid-area: 4 / 5; } /* Ίλιγγος */
+#grid-p2 .cb-cell:nth-child(22) { grid-area: 5 / 4; } /* Επιληπτικά Επεισόδια */
+#grid-p2 .cb-cell:nth-child(23) { grid-area: 5 / 3; } /* Ελκώδης Κολίτιδα */
+#grid-p2 .cb-cell:nth-child(24) { grid-area: 4 / 4; } /* Άνοια */
+#grid-p2 .cb-cell:nth-child(25) { grid-area: 5 / 5; } /* Άλλο αυτοάνοσο (Οτιδήποτε άλλο) */
 
 /* P2 custom mobile like P3 */
 .p2-mobile-only{display:none;}
@@ -292,7 +376,7 @@
   <div class="section">
     <div class="section-title">2. Αυτοάνοσα & Νευρολογικά Νοσήματα</div>
     <p class="note">Επιλέξτε όσα ισχύουν:</p>
-    <div class="cb-grid cols-2" id="grid-p2">
+    <div class="cb-grid" id="grid-p2">
       <label class="cb-cell"><input type="checkbox" name="p2" value="Hashimoto/Graves"> Αυτοάνοσες Παθήσεις Θυρεοειδούς (Hashimoto/Graves)</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Ψωρίαση"> Ψωρίαση</label>
       <label class="cb-cell"><input type="checkbox" name="p2" value="Συστημικός Ερυθηματώδης Λύκος"> Συστημικός Ερυθηματώδης Λύκος (ΣΕΛ)</label>
@@ -354,7 +438,7 @@
   <div class="section">
     <div class="section-title">3. Παθήσεις Μυοσκελετικού Συστήματος & Ορθοπεδικά Προβλήματα</div>
     <p class="note">Επιλέξτε όσα ισχύουν:</p>
-    <div class="p3-mobile-only" id="grid-p3-mobile">
+    <div id="grid-p3">
       <label class="cb-cell"><input type="checkbox" name="p3" value="Αυχεναλγία">Αυχεναλγία</label>
       <label class="cb-cell"><input type="checkbox" name="p3" value="Τροχαντηρίτιδα">Τροχαντηρίτιδα</label>
       <label class="cb-cell"><input type="checkbox" name="p3" value="Οσφυαλγία">Οσφυαλγία</label>
@@ -446,33 +530,45 @@
     <div class="section-title">9. Καθημερινές Συνήθειες & Φαρμακευτική Αγωγή</div>
     <div class="habits-list">
       <div class="habit-item">
-        <input type="checkbox" id="h_kapn" name="h" value="Κάπνισμα">
-        <span class="habit-label"><label for="h_kapn">Κάπνισμα</label> — Συχνότητα:</span>
+        <div class="habit-check">
+          <input type="checkbox" id="h_kapn" name="h" value="Κάπνισμα">
+          <span class="habit-label"><label for="h_kapn">Κάπνισμα</label> — Συχνότητα:</span>
+        </div>
         <input type="text" id="h_kapn_detail" placeholder="π.χ. 10 τσιγάρα/ημέρα">
       </div>
       <div class="habit-item">
-        <input type="checkbox" id="h_alk" name="h" value="Αλκοόλ">
-        <span class="habit-label"><label for="h_alk">Αλκοόλ</label> — Συχνότητα:</span>
+        <div class="habit-check">
+          <input type="checkbox" id="h_alk" name="h" value="Αλκοόλ">
+          <span class="habit-label"><label for="h_alk">Αλκοόλ</label> — Συχνότητα:</span>
+        </div>
         <input type="text" id="h_alk_detail" placeholder="π.χ. 2-3 φορές/εβδομάδα">
       </div>
       <div class="habit-item">
-        <input type="checkbox" id="h_farm" name="h" value="Φαρμακευτική Αγωγή">
-        <span class="habit-label"><label for="h_farm">Φαρμακευτική Αγωγή</label> — Ποια σκευάσματα & για ποιο λόγο:</span>
+        <div class="habit-check">
+          <input type="checkbox" id="h_farm" name="h" value="Φαρμακευτική Αγωγή">
+          <span class="habit-label"><label for="h_farm">Φαρμακευτική Αγωγή</label> — Ποια σκευάσματα & για ποιο λόγο:</span>
+        </div>
         <input type="text" id="h_farm_detail" placeholder="">
       </div>
       <div class="habit-item">
-        <input type="checkbox" id="h_enes" name="h" value="Ενέσιμα Σκευάσματα">
-        <span class="habit-label"><label for="h_enes">Ενέσιμα Σκευάσματα / Θεραπείες</label> (π.χ. Mounjaro, Ozempic, αισθητικές ενέσεις):</span>
+        <div class="habit-check">
+          <input type="checkbox" id="h_enes" name="h" value="Ενέσιμα Σκευάσματα">
+          <span class="habit-label"><label for="h_enes">Ενέσιμα Σκευάσματα / Θεραπείες</label> (π.χ. Mounjaro, Ozempic, αισθητικές ενέσεις):</span>
+        </div>
         <input type="text" id="h_enes_detail" placeholder="">
       </div>
       <div class="habit-item">
-        <input type="checkbox" id="h_vit" name="h" value="Βιταμίνες">
-        <span class="habit-label"><label for="h_vit">Βιταμίνες / Συμπληρώματα Διατροφής</label> — Λεπτομέρειες:</span>
+        <div class="habit-check">
+          <input type="checkbox" id="h_vit" name="h" value="Βιταμίνες">
+          <span class="habit-label"><label for="h_vit">Βιταμίνες / Συμπληρώματα Διατροφής</label> — Λεπτομέρειες:</span>
+        </div>
         <input type="text" id="h_vit_detail" placeholder="">
       </div>
       <div class="habit-item">
-        <input type="checkbox" id="h_sub" name="h" value="Χρήση Ουσιών">
-        <span class="habit-label"><label for="h_sub">Χρήση Ουσιών</label>:</span>
+        <div class="habit-check">
+          <input type="checkbox" id="h_sub" name="h" value="Χρήση Ουσιών">
+          <span class="habit-label"><label for="h_sub">Χρήση Ουσιών</label>:</span>
+        </div>
         <input type="text" id="h_sub_detail" placeholder="">
       </div>
     </div>
@@ -765,38 +861,3 @@
 </script>
 </body>
 </html>
-
-<style>
-@media(max-width:700px){#grid-p3-mobile{display:grid;grid-template-columns:1fr 1fr;gap:0;}#grid-p3-mobile .p3-mobile-col{display:flex;flex-direction:column;}#grid-p3-mobile .p3-mobile-full{grid-column:1 / -1;} }
-</style>
-
-
-<style>
-/* FINAL P3 TWO COLUMN MOBILE FIX */
-@media (max-width:700px){
-  #grid-p3-mobile{
-    display:grid !important;
-    grid-template-columns:1fr 1fr !important;
-    gap:0 !important;
-    border:1px solid #d0d0e8 !important;
-    border-radius:6px !important;
-    overflow:hidden !important;
-  }
-  #grid-p3-mobile .cb-cell{
-    border-bottom:1px solid #d0d0e8 !important;
-    border-right:1px solid #d0d0e8 !important;
-  }
-  #grid-p3-mobile .cb-cell:nth-child(2n){
-    border-right:none !important;
-  }
-  #grid-p3-mobile .cb-cell:nth-last-child(-n+2){
-    border-bottom:none !important;
-  }
-  #grid-p3-mobile .p3-full{
-    grid-column:1/-1 !important;
-    border-right:none !important;
-    border-bottom:none !important;
-    border-top:1px solid #d0d0e8 !important;
-  }
-}
-</style>
