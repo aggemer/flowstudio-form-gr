@@ -19,7 +19,7 @@
   .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
   .field-group { display: flex; flex-direction: column; gap: 3px; }
   .field-group label { font-size: 10px; font-weight: 700; color: #4a4a8a; text-transform: uppercase; letter-spacing: 0.8px; }
-  .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="date"] {
+  .field-group input[type="text"], .field-group input[type="email"], .field-group input[type="tel"], .field-group input[type="date"] {
     border: 1.5px solid #c8c8e8; border-radius: 5px; padding: 7px 10px;
     font-size: 13px; font-family: inherit; background: #f8f8fd; width: 100%;
   }
@@ -321,8 +321,9 @@
         </div>
       </div>
       <div class="field-group"><label>Διεύθυνση & Περιοχή</label><input type="text" id="f_dieu"></div>
-      <div class="field-group"><label>Τηλέφωνο & Τηλ. Ανάγκης (ICE) / Όνομα</label><input type="text" id="f_til" placeholder="π.χ. 6971234567 | ICE: Μαρία 6981234567"></div>
+      <div class="field-group"><label>Τηλέφωνο Επικοινωνίας</label><input type="tel" id="f_til" placeholder="π.χ. 6971234567"></div>
       <div class="field-group"><label>Email</label><input type="email" id="f_email"></div>
+      <div class="field-group" style="grid-column:1/-1;"><label>Επαφή Ανάγκης (ICE) — Όνομα / Τηλέφωνο</label><input type="text" id="f_ice" placeholder="π.χ. Μαρία Παπαδοπούλου 6981234567"></div>
     </div>
   </div>
 
@@ -742,6 +743,7 @@
       params.append('dieu', document.getElementById('f_dieu').value || '');
       params.append('til', document.getElementById('f_til').value || '');
       params.append('email', document.getElementById('f_email').value || '');
+      params.append('ice', document.getElementById('f_ice').value || '');
       params.append('p1', getChecked('p1'));
       params.append('p2', getChecked('p2'));
       params.append('p3', getChecked('p3'));
