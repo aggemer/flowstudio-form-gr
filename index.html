@@ -700,9 +700,20 @@
     hint.style.display = 'block'; hasSig = false;
   }
 
+  // Επιλογές ενός group χωρίς διπλότυπα (η ενότητα 2 έχει δύο λίστες: υπολογιστή & κινητού)
   function getChecked(name) {
-    return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(c => c.value).join(', ') || '—';
+    const vals = [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(c => c.value);
+    return [...new Set(vals)].join(', ') || '—';
   }
+
+  // Συγχρονισμός: ό,τι τσεκάρεται/ξετσεκάρεται σε μία λίστα αλλάζει και στο «δίδυμό» του στην άλλη
+  document.addEventListener('change', e => {
+    const el = e.target;
+    if (el.type !== 'checkbox' || !el.name) return;
+    document.querySelectorAll(`input[type="checkbox"][name="${el.name}"]`).forEach(other => {
+      if (other !== el && other.value === el.value) other.checked = el.checked;
+    });
+  });
 
   function showToast(msg, isError) {
     const t = document.getElementById('toast');
