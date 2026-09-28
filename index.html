@@ -703,7 +703,8 @@
   function showToast(msg, isError) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.className = isError ? 'error' : '';
-    t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 4000);
+    t.style.display = 'block';
+    clearTimeout(showToast._t); showToast._t = setTimeout(() => t.style.display = 'none', isError ? 10000 : 6000);
   }
 
   async function submitForm() {
@@ -730,60 +731,65 @@
 
     try {
       btn.textContent = '⏳ Ανέβασμα στο Drive...';
-      const params = new URLSearchParams();
-      params.append('lang', 'gr');
-      params.append('onoma', onoma);
-      params.append('date', dateStr.replace(/[/:, ]/g, '_'));
-      params.append('epag', document.getElementById('f_epag').value || '');
+      const params = {};
+      params.lang = 'gr';
+      params.onoma = onoma;
+      params.date = dateStr.replace(/[/:, ]/g, '_');
+      params.epag = document.getElementById('f_epag').value || '';
       const dob_d = document.getElementById('f_dob_d').value;
       const dob_m = document.getElementById('f_dob_m').value;
       const dob_y = document.getElementById('f_dob_y').value;
       const dob_val = (dob_d && dob_m && dob_y) ? dob_d + '/' + dob_m + '/' + dob_y : '';
-      params.append('dob', dob_val);
-      params.append('dieu', document.getElementById('f_dieu').value || '');
-      params.append('til', document.getElementById('f_til').value || '');
-      params.append('email', document.getElementById('f_email').value || '');
-      params.append('ice', document.getElementById('f_ice').value || '');
-      params.append('p1', getChecked('p1'));
-      params.append('p2', getChecked('p2'));
-      params.append('p3', getChecked('p3'));
-      params.append('sym', getChecked('sym'));
-      params.append('sxolia1', document.getElementById('f_sxolia1').value || '');
-      params.append('sxolia2', document.getElementById('f_sxolia2').value || '');
-      params.append('sxolia3', document.getElementById('f_sxolia3').value || '');
-      params.append('symptoms_detail', document.getElementById('f_symptoms').value || '');
-      params.append('xeir', document.getElementById('f_xeir').value || '');
-      params.append('mental', document.getElementById('f_mental').value || '');
-      params.append('egk', document.getElementById('f_egk').value || '');
-      params.append('athl', document.getElementById('f_athl').value || '');
-      params.append('habits', habitsArr.join(' | ') || '—');
-      params.append('velt', document.getElementById('f_velt').value || '');
-      params.append('pos', document.getElementById('f_pos').value || '');
-      params.append('fdate', document.getElementById('f_date').value || '');
-      params.append('sig', hasSig ? 'true' : 'false');
+      params.dob = dob_val;
+      params.dieu = document.getElementById('f_dieu').value || '';
+      params.til = document.getElementById('f_til').value || '';
+      params.email = document.getElementById('f_email').value || '';
+      params.ice = document.getElementById('f_ice').value || '';
+      params.p1 = getChecked('p1');
+      params.p2 = getChecked('p2');
+      params.p3 = getChecked('p3');
+      params.sym = getChecked('sym');
+      params.sxolia1 = document.getElementById('f_sxolia1').value || '';
+      params.sxolia2 = document.getElementById('f_sxolia2').value || '';
+      params.sxolia3 = document.getElementById('f_sxolia3').value || '';
+      params.symptoms_detail = document.getElementById('f_symptoms').value || '';
+      params.xeir = document.getElementById('f_xeir').value || '';
+      params.mental = document.getElementById('f_mental').value || '';
+      params.egk = document.getElementById('f_egk').value || '';
+      params.athl = document.getElementById('f_athl').value || '';
+      params.habits = habitsArr.join(' | ') || '—';
+      params.velt = document.getElementById('f_velt').value || '';
+      params.pos = document.getElementById('f_pos').value || '';
+      params.fdate = document.getElementById('f_date').value || '';
 
-      await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+      params.action = 'submit';
+      params.sig = hasSig ? canvas.toDataURL('image/png') : '';
 
-      // Send signature separately via POST
-      if (hasSig) {
-        const sigData = JSON.stringify({
-          action: 'signature',
-          onoma: onoma,
-          date: dateStr.replace(/[/:, ]/g, '_'),
-          sig: canvas.toDataURL('image/png')
+      // Ένα αίτημα με όλα τα στοιχεία + υπογραφή. Περιμένουμε την απάντηση του script.
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 60000);
+      let result;
+      try {
+        const resp = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(params),
+          signal: ctrl.signal
         });
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
-          body: sigData
-        });
+        const text = await resp.text();
+        try { result = JSON.parse(text); }
+        catch (e) { throw new Error('Μη αναμενόμενη απάντηση από τον server (HTTP ' + resp.status + ')'); }
+      } finally {
+        clearTimeout(timer);
       }
+      if (!result || result.ok !== true) throw new Error((result && result.error) || 'Unknown error');
 
-      showToast('✅ Ανέβηκε στο Drive επιτυχώς!', false);
+      showToast('✅ Το έντυπο αποθηκεύτηκε επιτυχώς!', false);
       btn.textContent = '✅ Εστάλη!';
     } catch(err) {
       console.error(err);
-      showToast('❌ Σφάλμα αποστολής. Δοκιμάστε ξανά.', true);
+      const reason = (err && err.name === 'AbortError') ? 'Η σύνδεση άργησε πολύ' : ((err && err.message) || '').replace(/[.\s]+$/, '');
+      showToast('❌ Η αποστολή απέτυχε' + (reason ? ': ' + reason : '') + '. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.', true);
       btn.disabled = false; btn.textContent = '📨 Αποστολή Εντύπου';
     }
   }
