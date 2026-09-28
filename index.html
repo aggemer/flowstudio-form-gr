@@ -279,6 +279,10 @@
   .p2-mobile-only .cb-cell:nth-last-child(-n+2){border-bottom:none;}
   .p2-mobile-only .cb-cell:last-child{grid-column:1/-1;border-right:none;border-bottom:none;border-top:1px solid #d0d0e8;}
 }
+  /* Required fields */
+  .req { color: #c0392b; font-weight: 700; }
+  .invalid { border-color: #c0392b !important; background: #fdf1f0 !important; box-shadow: 0 0 0 2px rgba(192,57,43,0.15); }
+  .consent-row.invalid { border-color: #c0392b !important; }
 </style>
 </head>
 <body>
@@ -293,10 +297,10 @@
   <div class="section">
     <div class="section-title">Προσωπικά Στοιχεία</div>
     <div class="fields-grid">
-      <div class="field-group"><label>Ονοματεπώνυμο</label><input type="text" id="f_onoma" placeholder="Όνομα Επώνυμο"></div>
+      <div class="field-group"><label>Ονοματεπώνυμο <span class="req">*</span></label><input type="text" id="f_onoma" placeholder="Όνομα Επώνυμο"></div>
       <div class="field-group"><label>Επάγγελμα</label><input type="text" id="f_epag"></div>
       <div class="field-group">
-        <label>Ημερομηνία Γέννησης</label>
+        <label>Ημερομηνία Γέννησης <span class="req">*</span></label>
         <div style="display:flex;gap:6px;">
           <select id="f_dob_d" style="border:1.5px solid #c8c8e8;border-radius:5px;padding:7px 6px;font-size:13px;font-family:inherit;background:#f8f8fd;flex:1;">
             <option value="">ΗΗ</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option>
@@ -321,9 +325,9 @@
         </div>
       </div>
       <div class="field-group"><label>Διεύθυνση & Περιοχή</label><input type="text" id="f_dieu"></div>
-      <div class="field-group"><label>Τηλέφωνο Επικοινωνίας</label><input type="tel" id="f_til" placeholder="π.χ. 6971234567"></div>
+      <div class="field-group"><label>Τηλέφωνο Επικοινωνίας <span class="req">*</span></label><input type="tel" id="f_til" placeholder="π.χ. 6971234567"></div>
       <div class="field-group"><label>Email</label><input type="email" id="f_email"></div>
-      <div class="field-group" style="grid-column:1/-1;"><label>Επαφή Ανάγκης (ICE) — Όνομα / Τηλέφωνο</label><input type="text" id="f_ice" placeholder="π.χ. Μαρία Παπαδοπούλου 6981234567"></div>
+      <div class="field-group" style="grid-column:1/-1;"><label>Επαφή Ανάγκης (ICE) — Όνομα / Τηλέφωνο <span class="req">*</span></label><input type="text" id="f_ice" placeholder="π.χ. Μαρία Παπαδοπούλου 6981234567"></div>
     </div>
   </div>
 
@@ -620,7 +624,7 @@
   <div class="section">
     <div class="sig-wrapper">
       <div>
-        <div class="sig-label">Υπογραφή <span style="font-weight:400;color:#999;">(ζωγραφίστε με το δάχτυλο ή το ποντίκι)</span></div>
+        <div class="sig-label">Υπογραφή <span class="req">*</span> <span style="font-weight:400;color:#999;">(ζωγραφίστε με το δάχτυλο ή το ποντίκι)</span></div>
         <div class="sig-container">
           <canvas id="sigCanvas"></canvas>
           <div class="sig-hint" id="sigHint">✍️ Υπογράψτε εδώ</div>
@@ -707,10 +711,59 @@
     clearTimeout(showToast._t); showToast._t = setTimeout(() => t.style.display = 'none', isError ? 10000 : 6000);
   }
 
+  // ── Υποχρεωτικά πεδία ──
+  function digitsOf(v) { return (v || '').replace(/\D/g, '').length; }
+  function checkRequired(names) {
+    const $ = id => document.getElementById(id);
+    const checks = [
+      ['onoma',   [$('f_onoma')],                        () => $('f_onoma').value.trim().length >= 3],
+      ['dob',     [$('f_dob_d'), $('f_dob_m'), $('f_dob_y')], () => $('f_dob_d').value && $('f_dob_m').value && $('f_dob_y').value],
+      ['til',     [$('f_til')],                          () => digitsOf($('f_til').value) >= 10],
+      ['ice',     [$('f_ice')],                          () => digitsOf($('f_ice').value) >= 10 && /[A-Za-zΑ-Ωα-ωΆ-Ώά-ώ]/.test($('f_ice').value)],
+      ['sig',     [document.querySelector('.sig-container')], () => hasSig],
+      ['consent', [document.querySelector('.consent-row')],   () => $('consent').checked]
+    ];
+    const missing = []; let first = null;
+    checks.forEach(([key, els, ok]) => {
+      const good = !!ok();
+      els.forEach(el => el && el.classList.toggle('invalid', !good));
+      if (!good) { missing.push(names[key]); if (!first) first = els[0]; }
+    });
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return missing;
+  }
+  // Το κόκκινο φεύγει μόλις ο χρήστης διορθώσει το πεδίο
+  document.addEventListener('input',  e => e.target.classList && e.target.classList.remove('invalid'));
+  document.addEventListener('change', e => {
+    if (!e.target.classList) return;
+    e.target.classList.remove('invalid');
+    if (e.target.id === 'consent') document.querySelector('.consent-row').classList.remove('invalid');
+    if (/^f_dob_/.test(e.target.id)) ['f_dob_d','f_dob_m','f_dob_y'].forEach(id => document.getElementById(id).classList.remove('invalid'));
+  });
+  document.getElementById('sigCanvas').addEventListener('pointerdown', () => document.querySelector('.sig-container').classList.remove('invalid'));
+
+  // Υπογραφή σε σταθερό μέγεθος (έως 600px πλάτος) — ίδιο μικρό αρχείο από κάθε κινητό
+  function signatureDataURL() {
+    const maxW = 600;
+    const scale = Math.min(1, maxW / canvas.width);
+    if (scale === 1) return canvas.toDataURL('image/png');
+    const c2 = document.createElement('canvas');
+    c2.width = Math.round(canvas.width * scale);
+    c2.height = Math.round(canvas.height * scale);
+    const x = c2.getContext('2d');
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(canvas, 0, 0, c2.width, c2.height);
+    return c2.toDataURL('image/png');
+  }
+
   async function submitForm() {
     const onoma = document.getElementById('f_onoma').value.trim();
-    if (!onoma) { showToast('⚠️ Παρακαλώ συμπληρώστε το Ονοματεπώνυμο', true); return; }
-    if (!document.getElementById('consent').checked) { showToast('⚠️ Παρακαλώ αποδεχτείτε τους όρους', true); return; }
+    // ── Έλεγχος υποχρεωτικών πεδίων ──
+    const missing = checkRequired({
+      onoma: 'Ονοματεπώνυμο', dob: 'Ημερομηνία Γέννησης', til: 'Τηλέφωνο (τουλάχιστον 10 ψηφία)',
+      ice: 'Επαφή Ανάγκης — όνομα και τηλέφωνο', sig: 'Υπογραφή', consent: 'Αποδοχή όρων'
+    });
+    if (missing.length) { showToast('⚠️ Συμπληρώστε: ' + missing.join(', '), true); return; }
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true; btn.textContent = '⏳ Ανέβασμα στο Drive...';
@@ -763,7 +816,7 @@
       params.fdate = document.getElementById('f_date').value || '';
 
       params.action = 'submit';
-      params.sig = hasSig ? canvas.toDataURL('image/png') : '';
+      params.sig = hasSig ? signatureDataURL() : '';
 
       // Ένα αίτημα με όλα τα στοιχεία + υπογραφή. Περιμένουμε την απάντηση του script.
       const ctrl = new AbortController();
