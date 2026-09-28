@@ -284,6 +284,8 @@
   .invalid { border-color: #c0392b !important; background: #fdf1f0 !important; box-shadow: 0 0 0 2px rgba(192,57,43,0.15); }
   .consent-row.invalid { border-color: #c0392b !important; }
   .hpx { position: absolute !important; left: -10000px !important; top: auto; width: 1px; height: 1px; overflow: hidden; }
+  .btn-edit { background: #fff; color: #2d2d6b; border: 1.5px solid #2d2d6b; border-radius: 6px; padding: 10px 26px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .btn-edit:hover { background: #f0f0fa; }
 </style>
 </head>
 <body>
@@ -648,6 +650,10 @@
   <!-- SUBMIT -->
   <div class="action-bar">
     <button class="btn-submit" id="submitBtn" onclick="submitForm()">📨 Αποστολή Εντύπου</button>
+    <div id="editBox" style="display:none;margin-top:12px;">
+      <div class="submit-note" id="editNote" style="margin-bottom:8px;"></div>
+      <button type="button" class="btn-edit" id="editBtn" onclick="startEdit()">✏️ Διόρθωση στοιχείων</button>
+    </div>
     <div class="submit-note">Το έντυπο θα ανέβει αυτόματα στο Google Drive</div>
   </div>
 
@@ -775,6 +781,25 @@
     return c2.toDataURL('image/png');
   }
 
+  // ── Διόρθωση μετά την αποστολή ──
+  let editToken = null, editTimer = null;
+  function showEditOption(min) {
+    document.getElementById('editNote').textContent = 'Κάνατε κάποιο λάθος; Μπορείτε να το διορθώσετε μέσα στα επόμενα ' + min + ' λεπτά. Θα χρειαστεί να υπογράψετε ξανά.';
+    document.getElementById('editBox').style.display = 'block';
+    clearTimeout(editTimer);
+    editTimer = setTimeout(() => {          // μετά το χρονικό όριο το κουμπί εξαφανίζεται
+      document.getElementById('editBox').style.display = 'none';
+    }, min * 60 * 1000);
+  }
+  function startEdit() {
+    clearSig();                              // νέα υπογραφή για το διορθωμένο έντυπο
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = false; btn.textContent = '📨 Αποστολή διορθωμένου εντύπου';
+    document.getElementById('editBox').style.display = 'none';
+    showToast('✏️ Κάντε τις αλλαγές, υπογράψτε ξανά και πατήστε «Αποστολή».', false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   async function submitForm() {
     const onoma = document.getElementById('f_onoma').value.trim();
     // ── Έλεγχος υποχρεωτικών πεδίων ──
@@ -835,6 +860,7 @@
       params.fdate = document.getElementById('f_date').value || '';
 
       params.action = 'submit';
+      params.editToken = editToken || '';
       params.hp = document.getElementById('x_note_7q').value;
       params.t = Date.now() - FORM_LOADED_AT;
       params.sig = hasSig ? signatureDataURL() : '';
@@ -858,8 +884,11 @@
       }
       if (!result || result.ok !== true) throw new Error((result && result.error) || 'Unknown error');
 
-      showToast('✅ Το έντυπο αποθηκεύτηκε επιτυχώς!', false);
+      const wasEdit = !!editToken;
+      editToken = result.editToken || null;
+      showToast(!wasEdit ? '✅ Το έντυπο αποθηκεύτηκε επιτυχώς!' : (result.replaced ? '✅ Το διορθωμένο έντυπο αποθηκεύτηκε!' : '✅ Αποθηκεύτηκε ως νέο έντυπο (ο χρόνος διόρθωσης είχε λήξει).'), false);
       btn.textContent = '✅ Εστάλη!';
+      if (editToken) showEditOption(result.editMinutes || 30);
     } catch(err) {
       console.error(err);
       const reason = (err && err.name === 'AbortError') ? 'Η σύνδεση άργησε πολύ' : ((err && err.message) || '').replace(/[.\s]+$/, '');
