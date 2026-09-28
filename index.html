@@ -283,6 +283,7 @@
   .req { color: #c0392b; font-weight: 700; }
   .invalid { border-color: #c0392b !important; background: #fdf1f0 !important; box-shadow: 0 0 0 2px rgba(192,57,43,0.15); }
   .consent-row.invalid { border-color: #c0392b !important; }
+  .hpx { position: absolute !important; left: -10000px !important; top: auto; width: 1px; height: 1px; overflow: hidden; }
 </style>
 </head>
 <body>
@@ -615,6 +616,12 @@
   </div>
 
   <!-- CONSENT -->
+  <!-- Παγίδα για bots: κρυφό πεδίο, ο πελάτης δεν το βλέπει ούτε το συμπληρώνει -->
+  <div class="hpx" aria-hidden="true">
+    <label for="x_note_7q">Leave this empty</label>
+    <input type="text" id="x_note_7q" name="x_note_7q" tabindex="-1" autocomplete="off" value="">
+  </div>
+
   <div class="consent-row">
     <input type="checkbox" id="consent">
     <label for="consent">Συναινώ & Αποδέχομαι ανεπιφύλακτα όλους τους παραπάνω όρους (Α, Β, Γ), την επεξεργασία των προσωπικών μου δεδομένων και δεδομένων υγείας, καθώς και την πολιτική ακυρώσεων του studio.</label>
@@ -652,6 +659,7 @@
 <div id="toast"></div>
 
 <script>
+  const FORM_LOADED_AT = Date.now();  // για τον έλεγχο «πολύ γρήγορης» υποβολής (bots)
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNEybaDiNjAglZ80ONvtVF4xitm_RYyGmwLFZUzDp9oFRjR9ANyi-5cf5CFMPx8YEe/exec';
 
   document.getElementById('f_date').valueAsDate = new Date();
@@ -827,6 +835,8 @@
       params.fdate = document.getElementById('f_date').value || '';
 
       params.action = 'submit';
+      params.hp = document.getElementById('x_note_7q').value;
+      params.t = Date.now() - FORM_LOADED_AT;
       params.sig = hasSig ? signatureDataURL() : '';
 
       // Ένα αίτημα με όλα τα στοιχεία + υπογραφή. Περιμένουμε την απάντηση του script.
