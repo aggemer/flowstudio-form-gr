@@ -301,7 +301,7 @@
     <div class="section-title">Προσωπικά Στοιχεία</div>
     <div class="fields-grid">
       <div class="field-group"><label>Ονοματεπώνυμο <span class="req">*</span></label><input type="text" id="f_onoma" placeholder="Όνομα Επώνυμο"></div>
-      <div class="field-group"><label>Επάγγελμα</label><input type="text" id="f_epag"></div>
+      <div class="field-group"><label>Επάγγελμα <span class="req">*</span></label><input type="text" id="f_epag"></div>
       <div class="field-group">
         <label>Ημερομηνία Γέννησης <span class="req">*</span></label>
         <div style="display:flex;gap:6px;">
@@ -327,9 +327,9 @@
           </script>
         </div>
       </div>
-      <div class="field-group"><label>Διεύθυνση & Περιοχή</label><input type="text" id="f_dieu"></div>
+      <div class="field-group"><label>Διεύθυνση & Περιοχή <span class="req">*</span></label><input type="text" id="f_dieu"></div>
       <div class="field-group"><label>Τηλέφωνο Επικοινωνίας <span class="req">*</span></label><input type="tel" id="f_til" placeholder="π.χ. 6971234567"></div>
-      <div class="field-group"><label>Email</label><input type="email" id="f_email"></div>
+      <div class="field-group"><label>Email <span class="req">*</span></label><input type="email" id="f_email"></div>
       <div class="field-group" style="grid-column:1/-1;"><label>Επαφή Ανάγκης (ICE) — Όνομα / Τηλέφωνο <span class="req">*</span></label><input type="text" id="f_ice" placeholder="π.χ. Μαρία Παπαδοπούλου 6981234567"></div>
     </div>
   </div>
@@ -585,7 +585,7 @@
   <!-- GOALS -->
   <div class="section">
     <div class="section">
-      <div class="section-title">10. Προσωπικοί Στόχοι</div>
+      <div class="section-title">10. Προσωπικοί Στόχοι <span class="req">*</span></div>
       <p style="font-size:12px;color:#555;margin-bottom:5px;">Τι σας έφερε στο χώρο μας και ποιοι είναι οι κύριοι στόχοι σας; Τι θα θέλατε να βελτιώσετε στην καθημερινότητά σας; (π.χ. ενδυνάμωση, αποκατάσταση, βελτίωση στάσης, ευεξία κ.λπ.):</p>
       <textarea id="f_velt" rows="3"></textarea>
     </div>
@@ -593,7 +593,7 @@
   <!-- HOW DID YOU HEAR -->
   <div class="section">
     <div class="bullet-section">
-      <div class="section-title">11. Πώς Ενημερωθήκατε για το Studio Μας;</div>
+      <div class="section-title">11. Πώς Ενημερωθήκατε για το Studio Μας; <span class="req">*</span></div>
       <p style="font-size:12px;color:#555;margin-bottom:5px;">(π.χ. Social Media, Google, περαστικός/ταμπέλα, από φίλο/γνωστό)</p>
       <textarea id="f_pos" rows="2"></textarea>
     </div>
@@ -740,13 +740,19 @@
   function digitsOf(v) { return (v || '').replace(/\D/g, '').length; }
   function checkRequired(names) {
     const $ = id => document.getElementById(id);
+    const filled = (id, n) => $(id).value.trim().length >= (n || 2);
     const checks = [
-      ['onoma',   [$('f_onoma')],                        () => $('f_onoma').value.trim().length >= 3],
+      ['onoma',   [$('f_onoma')],                        () => filled('f_onoma', 3)],
+      ['epag',    [$('f_epag')],                         () => filled('f_epag')],
       ['dob',     [$('f_dob_d'), $('f_dob_m'), $('f_dob_y')], () => $('f_dob_d').value && $('f_dob_m').value && $('f_dob_y').value],
+      ['dieu',    [$('f_dieu')],                         () => filled('f_dieu', 3)],
       ['til',     [$('f_til')],                          () => digitsOf($('f_til').value) >= 10],
+      ['email',   [$('f_email')],                        () => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('f_email').value.trim())],
       ['ice',     [$('f_ice')],                          () => digitsOf($('f_ice').value) >= 10 && /[A-Za-zΑ-Ωα-ωΆ-Ώά-ώ]/.test($('f_ice').value)],
-      ['sig',     [document.querySelector('.sig-container')], () => hasSig],
-      ['consent', [document.querySelector('.consent-row')],   () => $('consent').checked]
+      ['velt',    [$('f_velt')],                         () => filled('f_velt', 3)],
+      ['pos',     [$('f_pos')],                          () => filled('f_pos')],
+      ['consent', [document.querySelector('.consent-row')],   () => $('consent').checked],
+      ['sig',     [document.querySelector('.sig-container')], () => hasSig]
     ];
     const missing = []; let first = null;
     checks.forEach(([key, els, ok]) => {
@@ -843,8 +849,10 @@
     const onoma = document.getElementById('f_onoma').value.trim();
     // ── Έλεγχος υποχρεωτικών πεδίων ──
     const missing = checkRequired({
-      onoma: 'Ονοματεπώνυμο', dob: 'Ημερομηνία Γέννησης', til: 'Τηλέφωνο (τουλάχιστον 10 ψηφία)',
-      ice: 'Επαφή Ανάγκης — όνομα και τηλέφωνο', sig: 'Υπογραφή', consent: 'Αποδοχή όρων'
+      onoma: 'Ονοματεπώνυμο', epag: 'Επάγγελμα', dob: 'Ημερομηνία Γέννησης', dieu: 'Διεύθυνση & Περιοχή',
+      til: 'Τηλέφωνο (τουλάχιστον 10 ψηφία)', email: 'Email (έγκυρη διεύθυνση)',
+      ice: 'Επαφή Ανάγκης — όνομα και τηλέφωνο', velt: 'Προσωπικοί Στόχοι',
+      pos: 'Πώς ενημερωθήκατε για το studio', consent: 'Αποδοχή όρων', sig: 'Υπογραφή'
     });
     if (missing.length) { showToast('⚠️ Συμπληρώστε: ' + missing.join(', '), true); return; }
 
@@ -899,6 +907,7 @@
       params.fdate = document.getElementById('f_date').value || '';
 
       params.action = 'submit';
+      params.consent = document.getElementById('consent').checked ? 'yes' : '';
       params.editToken = editToken || '';
       params.sid = newSubmissionId();   // ίδιος κωδικός σε όλες τις επαναλήψεις αυτής της αποστολής
       params.hp = document.getElementById('x_note_7q').value;
