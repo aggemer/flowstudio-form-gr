@@ -807,7 +807,7 @@
   }
   async function postOnce(body) {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 60000);
+    const timer = setTimeout(() => ctrl.abort(), 12000);   // 12'' ανά προσπάθεια· αν το script δουλεύει ακόμα, η επόμενη προσπάθεια περιμένει το ίδιο αποτέλεσμα
     try {
       const resp = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -819,7 +819,7 @@
       try { return JSON.parse(text); }
       catch (e) { const err = new Error('Μη αναμενόμενη απάντηση από τον server (HTTP ' + resp.status + ')'); err.retry = true; throw err; }
     } catch (err) {
-      if (err && err.name !== 'AbortError' && err.retry === undefined) err.retry = true;   // π.χ. Failed to fetch
+      if (err && err.retry === undefined) err.retry = true;   // Failed to fetch / timeout: ξαναρωτάμε (δεν φτιάχνει δεύτερο PDF)
       throw err;
     } finally {
       clearTimeout(timer);
@@ -832,7 +832,8 @@
       catch (err) {
         lastErr = err;
         if (!err.retry) break;
-        await new Promise(r => setTimeout(r, 2000 * (i + 1)));
+        if (i < attempts - 1) document.getElementById('submitBtn').textContent = '⏳ Ολοκλήρωση αποστολής...';
+        await new Promise(r => setTimeout(r, 1500 * (i + 1)));
       }
     }
     throw lastErr;
@@ -906,7 +907,7 @@
 
       // Ένα αίτημα με όλα τα στοιχεία + υπογραφή. Αν χαθεί η απάντηση (π.χ. 404 της Google,
       // στιγμιαία διακοπή), ξαναρωτάμε αυτόματα με τον ίδιο κωδικό — το script δεν φτιάχνει δεύτερο PDF.
-      const result = await postWithRetry(JSON.stringify(params), 3);
+      const result = await postWithRetry(JSON.stringify(params), 4);
       if (!result || result.ok !== true) throw new Error((result && result.error) || 'Unknown error');
 
       const wasEdit = !!editToken;
